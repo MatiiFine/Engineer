@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "452321562402",
+    "project_id": "engenieer-45947",
+    "storage_bucket": "engenieer-45947.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:452321562402:android:58c139c3a9537dda0fdf7b",
+        "android_client_info": {
+          "package_name": "com.example.engenieer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgIjz0nN882xXqfmNJcX1qD-0XlKkVTH4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
