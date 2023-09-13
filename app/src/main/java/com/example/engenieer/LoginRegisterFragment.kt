@@ -7,13 +7,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import com.example.engenieer.databinding.FragmentLoginRegisterBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 
 class LoginRegisterFragment : Fragment() {
 
-    private lateinit var binding: FragmentLoginRegisterBinding
+    private var _binding: FragmentLoginRegisterBinding? = null
+    private val binding get() = _binding!!
     private var isLogin = true
     private lateinit var emailField: TextInputLayout
     private lateinit var passwordField: TextInputLayout
@@ -25,7 +27,8 @@ class LoginRegisterFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentLoginRegisterBinding.inflate(layoutInflater, container, false)
+        _binding = FragmentLoginRegisterBinding.inflate(layoutInflater, container, false)
+        //(activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         return binding.root
     }
 
