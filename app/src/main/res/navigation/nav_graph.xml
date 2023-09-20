@@ -9,5 +9,14 @@
         android:id="@+id/loginRegisterFragment"
         android:name="com.example.engenieer.LoginRegisterFragment"
         android:label="fragment_login_register"
-        tools:layout="@layout/fragment_login_register" />
+        tools:layout="@layout/fragment_login_register" >
+        <action
+            android:id="@+id/action_loginRegisterFragment_to_buildingFragment3"
+            app:destination="@id/buildingsList" />
+    </fragment>
+    <fragment
+        android:id="@+id/buildingsList"
+        android:name="com.example.engenieer.BuildingFragment"
+        android:label="fragment_building_list"
+        tools:layout="@layout/fragment_building_list" />
 </navigation>

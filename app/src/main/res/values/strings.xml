@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">Engenieer</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="app_name">Engineer</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="email_hint">example@domain.com</string>
     <string name="password_hint">password</string>
@@ -11,4 +10,8 @@
     <string name="login_failed_message">Sign in failed</string>
     <string name="register_success_message">Sign up success</string>
     <string name="login_success_message">Sign in success</string>
+    <string name="logout_title">Logout</string>
+    <string name="default_building_name">Building Name</string>
+    <string name="default_short_building_description">Its short building description</string>
+    <string name="title_of_building_list">Your Organization Buildings List</string>
 </resources>

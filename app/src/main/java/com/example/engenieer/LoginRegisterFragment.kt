@@ -28,7 +28,7 @@ class LoginRegisterFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentLoginRegisterBinding.inflate(layoutInflater, container, false)
-        //(activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+
         return binding.root
     }
 
@@ -83,7 +83,7 @@ class LoginRegisterFragment : Fragment() {
             FirebaseHandler.Authentication.login(email,password).apply{
                 addOnSuccessListener {
                     displayLoginSuccessMessage()
-                    //dokonczyc logowanie
+                    checkAccessAndGoToFirstScreen()
                 }
 
                 addOnFailureListener {
@@ -93,6 +93,13 @@ class LoginRegisterFragment : Fragment() {
         }
     }
 
+    private fun checkAccessAndGoToFirstScreen() {
+        var isAdmin: Boolean = false
+        FirebaseHandler.RealtimeDatabase.getUserAccessRef().get().addOnSuccessListener {
+            isAdmin = it.value as Boolean
+            val action = LoginRegisterFragmentDirections
+        }
+    }
     private fun displayLoginFailureMessage() {
         Snackbar.make(
             binding.root,

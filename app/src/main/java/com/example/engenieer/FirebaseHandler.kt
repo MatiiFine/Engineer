@@ -1,5 +1,7 @@
 package com.example.engenieer
 
+import android.accounts.AuthenticatorException
+import android.provider.ContactsContract.Data
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.ktx.auth
@@ -25,7 +27,15 @@ object FirebaseHandler {
         fun registerNewUserInDatabase(){
             val userUID: String = Authentication.getUserUid().toString()
             val userEmail: String = Authentication.getUserEmail().toString()
-            getUserReference(userUID).child("email").setValue(userEmail)
+            val userReference = getUserReference(userUID)
+            userReference.child("email").setValue(userEmail)
+            userReference.child("isAdmin").setValue(false)
+        }
+
+        fun getUserAccessRef(): DatabaseReference{
+            val userUID: String = Authentication.getUserUid().toString()
+            val userReference: DatabaseReference = getUserReference(userUID)
+            return userReference.child("isAdmin")
         }
     }
 
