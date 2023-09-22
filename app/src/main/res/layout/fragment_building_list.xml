@@ -4,17 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BuildingFragment">
+    tools:context=".buildings.BuildingFragment">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.85"/>
+        app:layout_constraintGuide_percent="0.8"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton"
+        android:id="@+id/addBuildingButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -70,7 +70,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/guideline4"
         app:layout_constraintVertical_bias="0.555"
-        tools:context=".BuildingFragment"
+        tools:context=".buildings.BuildingFragment"
         tools:listitem="@layout/fragment_building">
 
     </androidx.recyclerview.widget.RecyclerView>

@@ -1,7 +1,6 @@
 package com.example.engenieer
 
-import android.accounts.AuthenticatorException
-import android.provider.ContactsContract.Data
+import com.example.engenieer.buildings.BuildingItem
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.ktx.auth
@@ -12,6 +11,8 @@ import com.google.firebase.ktx.Firebase
 object FirebaseHandler {
     object RealtimeDatabase{
         private const val usersPath: String = "users"
+        private const val buildingsPath: String = "buildings"
+
         private val firebaseDatabase by lazy {
             Firebase.database("https://engenieer-45947-default-rtdb.europe-west1.firebasedatabase.app/")
         }
@@ -36,6 +37,14 @@ object FirebaseHandler {
             val userUID: String = Authentication.getUserUid().toString()
             val userReference: DatabaseReference = getUserReference(userUID)
             return userReference.child("isAdmin")
+        }
+
+        fun getBuildingsRef(): DatabaseReference{
+            return firebaseDatabase.reference.child(buildingsPath)
+        }
+
+        fun addNewBuilding(building: BuildingItem){
+            getBuildingsRef().setValue(building)
         }
     }
 

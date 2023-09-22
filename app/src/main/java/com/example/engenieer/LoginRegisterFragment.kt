@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.findNavController
 import com.example.engenieer.databinding.FragmentLoginRegisterBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
@@ -36,7 +37,7 @@ class LoginRegisterFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         isLogin = true
         bindElements()
-        setupButtons()
+        setButtons()
     }
 
     private fun bindElements(){
@@ -47,12 +48,12 @@ class LoginRegisterFragment : Fragment() {
         registerButton = binding.registerButton
     }
 
-    private fun setupButtons(){
-        setupLoginListener()
-        setupRegisterListener()
+    private fun setButtons(){
+        setLoginListener()
+        setRegisterListener()
     }
 
-    private fun setupRegisterListener() {
+    private fun setRegisterListener() {
         registerButton.setOnClickListener {
             if (isLogin){
                 loginButton.setText(R.string.register_button)
@@ -68,7 +69,7 @@ class LoginRegisterFragment : Fragment() {
         }
     }
 
-    private fun setupLoginListener() {
+    private fun setLoginListener() {
         loginButton.setOnClickListener {
             if (isLogin) login()
             else register()
@@ -97,7 +98,8 @@ class LoginRegisterFragment : Fragment() {
         var isAdmin: Boolean = false
         FirebaseHandler.RealtimeDatabase.getUserAccessRef().get().addOnSuccessListener {
             isAdmin = it.value as Boolean
-            val action = LoginRegisterFragmentDirections
+            val action = LoginRegisterFragmentDirections.actionLoginRegisterFragmentToBuildingFragment(isAdmin)
+            findNavController().navigate(action)
         }
     }
     private fun displayLoginFailureMessage() {
@@ -136,8 +138,9 @@ class LoginRegisterFragment : Fragment() {
             FirebaseHandler.Authentication.register(email,password).apply {
                 addOnSuccessListener {
                     displayRegisterSuccessMessage()
-                    //dokonczyc rejestracje
                     FirebaseHandler.RealtimeDatabase.registerNewUserInDatabase()
+                    val action = LoginRegisterFragmentDirections.actionLoginRegisterFragmentToBuildingFragment(false)
+                    findNavController().navigate(action)
                 }
 
                 addOnFailureListener {

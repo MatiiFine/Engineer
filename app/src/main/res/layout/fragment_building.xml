@@ -43,7 +43,7 @@
             app:layout_constraintGuide_percent="0.30" />
 
         <TextView
-            android:id="@+id/buildingItemDescription"
+            android:id="@+id/buildingItemShortDescription"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="10dp"

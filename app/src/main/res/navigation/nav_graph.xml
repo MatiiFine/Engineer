@@ -11,12 +11,25 @@
         android:label="fragment_login_register"
         tools:layout="@layout/fragment_login_register" >
         <action
-            android:id="@+id/action_loginRegisterFragment_to_buildingFragment3"
-            app:destination="@id/buildingsList" />
+            android:id="@+id/action_loginRegisterFragment_to_buildingFragment"
+            app:destination="@id/buildingFragment" />
     </fragment>
     <fragment
-        android:id="@+id/buildingsList"
-        android:name="com.example.engenieer.BuildingFragment"
+        android:id="@+id/buildingFragment"
+        android:name="com.example.engenieer.buildings.BuildingFragment"
         android:label="fragment_building_list"
-        tools:layout="@layout/fragment_building_list" />
+        tools:layout="@layout/fragment_building_list" >
+        <argument
+            android:name="isAdmin"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        <action
+            android:id="@+id/action_buildingFragment_to_addBuildingFragment"
+            app:destination="@id/addBuildingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addBuildingFragment"
+        android:name="com.example.engenieer.buildings.AddBuildingFragment"
+        android:label="fragment_add_building"
+        tools:layout="@layout/fragment_add_building" />
 </navigation>
