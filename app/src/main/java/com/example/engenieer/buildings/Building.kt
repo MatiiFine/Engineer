@@ -11,6 +11,10 @@ object Building {
     fun addItem(item: BuildingItem) {
         ITEMS.add(item)
     }
+
+    fun clearItems(){
+        ITEMS.clear()
+    }
 }
 data class BuildingItem(val buildingID: String,
                         val name: String,

@@ -1,18 +1,26 @@
 package com.example.engenieer.buildings
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.engenieer.FirebaseHandler
 import com.example.engenieer.R
 import com.example.engenieer.databinding.FragmentAddBuildingBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import java.util.UUID
 
 
 class AddBuildingFragment : Fragment() {
@@ -24,6 +32,9 @@ class AddBuildingFragment : Fragment() {
     private lateinit var buildingNameInput: EditText
     private lateinit var buildingShortDescInput: EditText
     private lateinit var buildingDescInput: EditText
+    private lateinit var photoID: String
+    private lateinit var buildingPhotoUri: Uri
+    private var photoHasBeenChange: Boolean = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -36,6 +47,11 @@ class AddBuildingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         bindElements()
         setButtons()
+        setDefaultPhoto()
+    }
+
+    private fun setDefaultPhoto() {
+        buildingPhoto.setImageResource(R.drawable.ic_building)
     }
 
     private fun bindElements() {
@@ -53,7 +69,28 @@ class AddBuildingFragment : Fragment() {
     }
 
     private fun setSelectPhotoButtonListener() {
-//        TODO("Not yet implemented")
+        selectPhotoButton.setOnClickListener { selectPhoto() }
+    }
+
+    val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        // Callback is invoked after the user selects a media item or closes the
+        // photo picker.
+        if (uri != null) {
+            buildingPhotoUri = uri
+            buildingPhoto.setImageURI(uri)
+        } else {
+
+        }
+    }
+
+    private fun selectPhoto() {
+        pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        createPhotoID()
+    }
+
+    private fun createPhotoID() {
+        var photoID = UUID.randomUUID().toString()
+        this.photoID = photoID
     }
 
     private fun setSaveButtonListener() {
@@ -66,7 +103,13 @@ class AddBuildingFragment : Fragment() {
         if (!isValid) displaySaveFailedMessage()
         else{
             uploadData()
+            returnToBuildingList()
         }
+    }
+
+    private fun returnToBuildingList() {
+        val action = AddBuildingFragmentDirections.actionAddBuildingFragmentToBuildingFragment(true)
+        findNavController().navigate(action)
     }
 
     private fun uploadData() {
@@ -77,9 +120,10 @@ class AddBuildingFragment : Fragment() {
                 buildingNameInput.text.toString(),
                 buildingDescInput.text.toString(),
                 buildingShortDescInput.text.toString(),
-                "" //TODO("photo")
+                photoID
             )
         )
+        FirebaseHandler.RealtimeDatabase.uploadPhoto(photoID,buildingPhotoUri)
     }
 
     private fun displaySaveFailedMessage() {

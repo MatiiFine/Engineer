@@ -1,5 +1,7 @@
 package com.example.engenieer
 
+import android.net.Uri
+import com.example.engenieer.buildings.BuildingDB
 import com.example.engenieer.buildings.BuildingItem
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
@@ -7,11 +9,14 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 
 object FirebaseHandler {
     object RealtimeDatabase{
         private const val usersPath: String = "users"
         private const val buildingsPath: String = "buildings"
+        private const val storagePath: String = "storage"
 
         private val firebaseDatabase by lazy {
             Firebase.database("https://engenieer-45947-default-rtdb.europe-west1.firebasedatabase.app/")
@@ -23,6 +28,10 @@ object FirebaseHandler {
 
         private fun getUserReference(userUID: String): DatabaseReference{
             return getUsersReference().child(userUID)
+        }
+
+        private fun getStorageRef(): StorageReference {
+            return FirebaseStorage.getInstance().getReference(storagePath)
         }
 
         fun registerNewUserInDatabase(){
@@ -44,7 +53,18 @@ object FirebaseHandler {
         }
 
         fun addNewBuilding(building: BuildingItem){
-            getBuildingsRef().setValue(building)
+            getBuildingsRef().child(building.buildingID).setValue(
+                BuildingDB(
+                    building.name,
+                    building.description,
+                    building.shortDescription,
+                    building.photo
+                )
+            )
+        }
+
+        fun uploadPhoto(photoID: String, uri: Uri?){
+            getStorageRef().child(photoID).putFile(uri!!)
         }
     }
 

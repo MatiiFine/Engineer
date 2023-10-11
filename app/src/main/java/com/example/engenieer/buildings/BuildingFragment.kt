@@ -27,6 +27,7 @@ class BuildingFragment : Fragment() {
         binding = FragmentBuildingListBinding.inflate(inflater,container,false)
         with(binding.list){
             layoutManager = LinearLayoutManager(context)
+            clearBuildings()
             downloadBuildingsData()
             adapter = MyBuildingRecyclerViewAdapter(Building.ITEMS)
         }
@@ -58,6 +59,10 @@ class BuildingFragment : Fragment() {
     private fun addNewBuilding() {
         val action = BuildingFragmentDirections.actionBuildingFragmentToAddBuildingFragment()
         findNavController().navigate(action)
+    }
+
+    private fun clearBuildings() {
+        Building.clearItems()
     }
 
     private fun bindElements() {

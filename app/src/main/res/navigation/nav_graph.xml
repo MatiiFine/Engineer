@@ -31,5 +31,9 @@
         android:id="@+id/addBuildingFragment"
         android:name="com.example.engenieer.buildings.AddBuildingFragment"
         android:label="fragment_add_building"
-        tools:layout="@layout/fragment_add_building" />
+        tools:layout="@layout/fragment_add_building" >
+        <action
+            android:id="@+id/action_addBuildingFragment_to_buildingFragment"
+            app:destination="@id/buildingFragment" />
+    </fragment>
 </navigation>

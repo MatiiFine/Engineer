@@ -27,7 +27,7 @@ class MyBuildingRecyclerViewAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
         holder.buildingName.text = item.name
-        holder.buildingShortDescription.text = item.name
+        holder.buildingShortDescription.text = item.shortDescription
     }
 
     override fun getItemCount(): Int = values.size
