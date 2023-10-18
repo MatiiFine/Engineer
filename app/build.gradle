@@ -58,6 +58,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-database'
     implementation 'com.google.firebase:firebase-database-ktx'
     implementation 'com.google.firebase:firebase-storage-ktx'
+    implementation 'com.firebaseui:firebase-ui-storage:7.2.0'
+
 
     //nav graph
     implementation 'androidx.navigation:navigation-fragment-ktx:2.6.0'

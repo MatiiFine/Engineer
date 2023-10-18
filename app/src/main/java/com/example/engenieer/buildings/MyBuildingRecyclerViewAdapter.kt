@@ -1,15 +1,16 @@
 package com.example.engenieer.buildings
 
+import android.graphics.Bitmap
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-
 import com.example.engenieer.databinding.FragmentBuildingBinding
 
 class MyBuildingRecyclerViewAdapter(
-    private val values: List<BuildingItem>
+    private val values: List<BuildingItem>,
+    private val photos: ArrayList<Bitmap>
 ) : RecyclerView.Adapter<MyBuildingRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -28,6 +29,7 @@ class MyBuildingRecyclerViewAdapter(
         val item = values[position]
         holder.buildingName.text = item.name
         holder.buildingShortDescription.text = item.shortDescription
+        holder.buildingPicture.setImageBitmap(photos[position])
     }
 
     override fun getItemCount(): Int = values.size

@@ -7,13 +7,28 @@ import java.util.ArrayList
 object Building {
 
     val ITEMS: MutableList<BuildingItem> = ArrayList()
+    var iterator: Int = 0
 
     fun addItem(item: BuildingItem) {
         ITEMS.add(item)
+        iterator = 0
     }
 
     fun clearItems(){
         ITEMS.clear()
+    }
+
+    fun isAbleToDownload(): Boolean{
+        return iterator < ITEMS.size
+    }
+
+    fun getPhotoID(): String{
+        iterator += 1
+        return ITEMS[iterator-1].photo
+    }
+
+    fun getIter(): Int{
+        return iterator-1
     }
 }
 data class BuildingItem(val buildingID: String,

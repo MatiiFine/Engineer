@@ -34,6 +34,14 @@ object FirebaseHandler {
             return FirebaseStorage.getInstance().getReference(storagePath)
         }
 
+        fun getBuildingsStorageRef(): StorageReference{
+            return getStorageRef().child(buildingsPath)
+        }
+
+        fun getBuildingRef(buildingID: String): StorageReference{
+            return getBuildingsStorageRef().child(buildingID)
+        }
+
         fun registerNewUserInDatabase(){
             val userUID: String = Authentication.getUserUid().toString()
             val userEmail: String = Authentication.getUserEmail().toString()
@@ -64,7 +72,7 @@ object FirebaseHandler {
         }
 
         fun uploadPhoto(photoID: String, uri: Uri?){
-            getStorageRef().child(photoID).putFile(uri!!)
+            getBuildingsStorageRef().child(photoID).putFile(uri!!)
         }
     }
 
