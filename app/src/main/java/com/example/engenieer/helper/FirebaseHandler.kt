@@ -1,6 +1,7 @@
-package com.example.engenieer
+package com.example.engenieer.helper
 
 import android.net.Uri
+import android.provider.ContactsContract.Data
 import com.example.engenieer.buildings.BuildingDB
 import com.example.engenieer.buildings.BuildingItem
 import com.google.android.gms.tasks.Task
@@ -34,11 +35,11 @@ object FirebaseHandler {
             return FirebaseStorage.getInstance().getReference(storagePath)
         }
 
-        fun getBuildingsStorageRef(): StorageReference{
+        private fun getBuildingsStorageRef(): StorageReference{
             return getStorageRef().child(buildingsPath)
         }
 
-        fun getBuildingRef(buildingID: String): StorageReference{
+        fun getBuildingStorageRef(buildingID: String): StorageReference{
             return getBuildingsStorageRef().child(buildingID)
         }
 
@@ -58,6 +59,10 @@ object FirebaseHandler {
 
         fun getBuildingsRef(): DatabaseReference{
             return firebaseDatabase.reference.child(buildingsPath)
+        }
+
+        fun getBuildingRef(buildingID: String): DatabaseReference{
+            return getBuildingsRef().child(buildingID)
         }
 
         fun addNewBuilding(building: BuildingItem){

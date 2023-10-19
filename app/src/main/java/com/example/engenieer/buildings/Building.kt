@@ -2,6 +2,8 @@ package com.example.engenieer.buildings
 
 import android.os.Parcel
 import android.os.Parcelable
+import android.util.Log
+import com.example.engenieer.helper.FirebaseHandler
 import java.util.ArrayList
 
 object Building {
@@ -30,6 +32,25 @@ object Building {
     fun getIter(): Int{
         return iterator-1
     }
+
+    fun deleteBuilding(position: Int){
+        deleteBuildingPhoto(ITEMS[position].photo)
+        deleteBuildingFromDatabase(ITEMS[position].buildingID)
+        ITEMS.removeAt(position)
+    }
+
+    private fun deleteBuildingPhoto(photoID: String){
+        FirebaseHandler.RealtimeDatabase.getBuildingStorageRef(photoID).delete().addOnSuccessListener {
+            Log.i("buildingDeletion","photoDeleted")
+        }
+    }
+
+    private fun deleteBuildingFromDatabase(buildingID: String){
+        FirebaseHandler.RealtimeDatabase.getBuildingRef(buildingID).removeValue().addOnSuccessListener {
+            Log.i("buildingDeletion","buildingInfoDeleted")
+        }
+    }
+
 }
 data class BuildingItem(val buildingID: String,
                         val name: String,

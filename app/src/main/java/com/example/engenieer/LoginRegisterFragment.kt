@@ -7,9 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
 import com.example.engenieer.databinding.FragmentLoginRegisterBinding
+import com.example.engenieer.helper.FirebaseHandler
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 
@@ -38,6 +38,13 @@ class LoginRegisterFragment : Fragment() {
         isLogin = true
         bindElements()
         setButtons()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if(FirebaseHandler.Authentication.isLoggedIn()){
+            checkAccessAndGoToFirstScreen()
+        }
     }
 
     private fun bindElements(){

@@ -1,5 +1,6 @@
 package com.example.engenieer.buildings
 
+import android.app.AlertDialog
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -8,24 +9,20 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.core.graphics.drawable.toBitmap
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
-import com.example.engenieer.FirebaseHandler
+import com.example.engenieer.helper.FirebaseHandler
 import com.example.engenieer.R
 import com.example.engenieer.databinding.FragmentBuildingListBinding
+import com.example.engenieer.helper.ToDoListener
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ListResult
-import com.google.firebase.storage.ktx.storage
 
-class BuildingFragment : Fragment() {
+class BuildingFragment : Fragment(), ToDoListener {
 
     private lateinit var binding: FragmentBuildingListBinding
     private lateinit var addBuildingButton: FloatingActionButton
@@ -40,7 +37,7 @@ class BuildingFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
             clearBuildings()
             downloadBuildingsData()
-            adapter = MyBuildingRecyclerViewAdapter(Building.ITEMS,photos)
+            adapter = MyBuildingRecyclerViewAdapter(Building.ITEMS,photos,this@BuildingFragment, args.isAdmin)
         }
 
         return binding.root
@@ -102,7 +99,7 @@ class BuildingFragment : Fragment() {
                 }
                 prepareDefaultBuildingsPhoto()
                 downloadBuildingsPhoto()
-                loadAdapter()
+                reloadAdapter()
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -121,16 +118,16 @@ class BuildingFragment : Fragment() {
         if(Building.isAbleToDownload()){
             val photoID = Building.getPhotoID()
             if (photoID.isNotEmpty()){
-                FirebaseHandler.RealtimeDatabase.getBuildingRef(photoID)
+                FirebaseHandler.RealtimeDatabase.getBuildingStorageRef(photoID)
                     .getBytes(4196 * 4196).addOnSuccessListener {
                         var image = it.toBitmap()
                         photos[Building.getIter()] = image
-                        loadAdapter()
+                        reloadAdapter()
                         downloadBuildingsPhoto()
                     }
             }
         }else{
-            loadAdapter()
+            reloadAdapter()
         }
     }
 
@@ -141,15 +138,63 @@ class BuildingFragment : Fragment() {
         )
     }
 
-    private fun loadAdapter(){
+    private fun reloadAdapter(){
         with(binding.list){
             layoutManager = LinearLayoutManager(context)
-            adapter = MyBuildingRecyclerViewAdapter(Building.ITEMS,photos)
+            adapter = MyBuildingRecyclerViewAdapter(Building.ITEMS,photos,this@BuildingFragment,args.isAdmin)
         }
     }
 
     private fun ByteArray.toBitmap(): Bitmap {
         return BitmapFactory.decodeByteArray(this, 0, this.size)
+    }
+
+    override fun onItemClick(position: Int) {
+        //TODO("Go to rooms section")
+    }
+
+    override fun onItemLongClick(position: Int) {
+        startDialog(position)
+    }
+
+    private fun startDialog(position: Int) {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(context)
+
+        builder.apply {
+            setMessage(R.string.delete_building_msg)
+            setTitle(R.string.delete_building_title)
+
+            setPositiveButton(getString(R.string.delete_positive_btn)){ dialog, id ->
+                deleteBuilding(position)
+            }
+
+            setNegativeButton(getString(R.string.delete_negative_btn)){ dialog, id ->
+                showMessage(2)
+            }
+        }
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    private fun deleteBuilding(position: Int){
+        Building.deleteBuilding(position)
+        photos.removeAt(position)
+        reloadAdapter()
+        showMessage(1)
+    }
+
+    private fun showMessage(i: Int) {
+        var message: String = ""
+        when(i){
+            1 -> message = getString(R.string.building_delete_confirmed)
+            2 -> message = getString(R.string.building_delete_declined)
+        }
+        Snackbar.make(
+            binding.root,
+            message,
+            Snackbar.LENGTH_SHORT
+        ).show()
     }
 
 }
