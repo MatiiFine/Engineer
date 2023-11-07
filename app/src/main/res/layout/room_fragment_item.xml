@@ -10,28 +10,27 @@
         android:layout_height="120dp"
         android:layout_marginBottom="10dp">
 
-
         <ImageView
-            android:id="@+id/buildingItemPicture"
+            android:id="@+id/roomItemPicture"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/buildingItemName"
+            app:layout_constraintEnd_toStartOf="@+id/roomItemName"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@drawable/ic_default_building" />
+            tools:srcCompat="@drawable/ic_room" />
 
         <TextView
-            android:id="@+id/buildingItemName"
+            android:id="@+id/roomItemName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
-            android:text="@string/default_building_name"
+            android:text="@string/default_room_name"
             app:layout_constraintBottom_toTopOf="@+id/guideline2"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/buildingItemPicture"
+            app:layout_constraintStart_toEndOf="@+id/roomItemPicture"
             app:layout_constraintTop_toTopOf="parent"
             android:textStyle="bold"
             android:textSize="26sp"
@@ -45,18 +44,18 @@
             app:layout_constraintGuide_percent="0.30" />
 
         <TextView
-            android:id="@+id/buildingItemShortDescription"
+            android:id="@+id/roomItemShortDescription"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
-            android:text="@string/default_short_building_description"
+            android:text="@string/default_short_room_description"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/buildingItemPicture"
+            app:layout_constraintStart_toEndOf="@+id/roomItemPicture"
             app:layout_constraintTop_toTopOf="@+id/guideline2"
             android:textSize="16sp"
             android:textColor="@color/blue"/>
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

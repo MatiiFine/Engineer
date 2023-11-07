@@ -31,7 +31,7 @@ class AddBuildingFragment : Fragment() {
     private lateinit var buildingDescInput: EditText
     private lateinit var photoID: String
     private lateinit var buildingPhotoUri: Uri
-    private var photoHasBeenChange: Boolean = false
+    private var photoHasBeenChanged: Boolean = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -105,7 +105,7 @@ class AddBuildingFragment : Fragment() {
     }
 
     private fun returnToBuildingList() {
-        val action = AddBuildingFragmentDirections.actionAddBuildingFragmentToBuildingFragment(true)
+        val action = AddBuildingFragmentDirections.actionAddBuildingFragmentToBuildingFragment()
         findNavController().navigate(action)
     }
 

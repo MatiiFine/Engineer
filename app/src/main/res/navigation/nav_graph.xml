@@ -19,13 +19,12 @@
         android:name="com.example.engenieer.buildings.BuildingFragment"
         android:label="fragment_building_list"
         tools:layout="@layout/fragment_building_list" >
-        <argument
-            android:name="isAdmin"
-            app:argType="boolean"
-            android:defaultValue="false" />
         <action
             android:id="@+id/action_buildingFragment_to_addBuildingFragment"
             app:destination="@id/addBuildingFragment" />
+        <action
+            android:id="@+id/actionBuildingFragmentRoomFragment"
+            app:destination="@id/roomFragment" />
     </fragment>
     <fragment
         android:id="@+id/addBuildingFragment"
@@ -35,5 +34,30 @@
         <action
             android:id="@+id/action_addBuildingFragment_to_buildingFragment"
             app:destination="@id/buildingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/roomFragment"
+        android:name="com.example.engenieer.rooms.RoomFragment"
+        android:label="room_fragment_item_list"
+        tools:layout="@layout/room_fragment_item_list" >
+        <argument
+            android:name="roomPosition"
+            app:argType="integer" />
+        <argument
+            android:name="isAdmin"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        <action
+            android:id="@+id/action_roomFragment_to_addRoomFragment"
+            app:destination="@id/addRoomFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addRoomFragment"
+        android:name="com.example.engenieer.rooms.AddRoomFragment"
+        android:label="fragment_add_room"
+        tools:layout="@layout/fragment_add_room" >
+        <action
+            android:id="@+id/action_addRoomFragment_to_roomFragment"
+            app:destination="@id/roomFragment" />
     </fragment>
 </navigation>

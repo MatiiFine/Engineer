@@ -25,4 +25,10 @@
     <string name="delete_negative_btn">No</string>
     <string name="building_delete_confirmed">Building has been deleted</string>
     <string name="building_delete_declined">The deletion has been canceled</string>
+    <string name="default_room_name">Room Name</string>
+    <string name="default_short_room_description">Its short room description</string>
+    <string name="title_of_room_list">Your Organization Room List</string>
+    <string name="room_name_hint">Room name</string>
+    <string name="room_short_description_hint">Room description</string>
+    <string name="room_description_hint">Description</string>
 </resources>

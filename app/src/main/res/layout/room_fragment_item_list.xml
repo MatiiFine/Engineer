@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".buildings.BuildingFragment">
+    tools:context=".rooms.RoomFragment">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline6"
@@ -14,12 +14,12 @@
         app:layout_constraintGuide_percent="0.8"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addBuildingButton"
+        android:id="@+id/addRoomButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:clickable="true"
         android:contentDescription="@string/app_name"
-        android:src="@drawable/ic_building"
+        android:src="@drawable/ic_add"
         app:tint="@color/white"
         app:backgroundTint="@color/blue"
         app:layout_constraintBottom_toTopOf="@+id/guideline5"
@@ -48,7 +48,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="5dp"
-        android:text="@string/title_of_building_list"
+        android:text="@string/title_of_room_list"
         android:textColor="@color/blue"
         android:textSize="30sp"
         android:textStyle="bold"
@@ -60,7 +60,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list"
-        android:name="com.example.engenieer.BuildingFragment"
+        android:name="com.example.engenieer.RoomFragment"
         android:layout_width="361dp"
         android:layout_height="634dp"
         android:layout_marginTop="10dp"
@@ -70,8 +70,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/guideline4"
         app:layout_constraintVertical_bias="0.555"
-        tools:context=".buildings.BuildingFragment"
-        tools:listitem="@layout/fragment_building">
+        tools:context=".rooms.RoomFragment"
+        tools:listitem="@layout/room_fragment_item"/>
 
-    </androidx.recyclerview.widget.RecyclerView>
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>

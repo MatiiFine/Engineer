@@ -31,10 +31,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        /*val navController = findNavController(R.id.nav_host_fragment_activity_main)
+        val navController = findNavController(R.id.nav_host_fragment_activity_main)
         val navDestination = navController.currentDestination ?: return super.onPrepareOptionsMenu(menu)
         val isVisible = navDestination.id != R.id.loginRegisterFragment
-        menu?.findItem(R.id.logout)?.isVisible = isVisible*/
+        menu?.findItem(R.id.logout)?.isVisible = isVisible
 
         supportActionBar!!.setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.blue)))
         return super.onPrepareOptionsMenu(menu)

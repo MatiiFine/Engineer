@@ -27,7 +27,7 @@ class BuildingFragment : Fragment(), ToDoListener {
     private lateinit var binding: FragmentBuildingListBinding
     private lateinit var addBuildingButton: FloatingActionButton
     private val photos: ArrayList<Bitmap> = ArrayList()
-    private val args: BuildingFragmentArgs by navArgs()
+    private var isAdmin: Boolean = false
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -37,7 +37,7 @@ class BuildingFragment : Fragment(), ToDoListener {
             layoutManager = LinearLayoutManager(context)
             clearBuildings()
             downloadBuildingsData()
-            adapter = MyBuildingRecyclerViewAdapter(Building.ITEMS,photos,this@BuildingFragment, args.isAdmin)
+            adapter = MyBuildingRecyclerViewAdapter(Building.ITEMS,photos,this@BuildingFragment, isAdmin)
         }
 
         return binding.root
@@ -55,9 +55,11 @@ class BuildingFragment : Fragment(), ToDoListener {
     }
 
     private fun setAddBuildingButtonVisibility() {
-        val isAdmin = args.isAdmin
-        if (isAdmin) addBuildingButton.visibility = View.VISIBLE
-        else addBuildingButton.visibility = View.GONE
+        FirebaseHandler.RealtimeDatabase.getUserAccessRef().get().addOnSuccessListener {
+            isAdmin = it.value as Boolean
+            if (isAdmin) addBuildingButton.visibility = View.VISIBLE
+            else addBuildingButton.visibility = View.GONE
+        }
     }
 
     private fun setAddBuildingButtonListener() {
@@ -141,7 +143,7 @@ class BuildingFragment : Fragment(), ToDoListener {
     private fun reloadAdapter(){
         with(binding.list){
             layoutManager = LinearLayoutManager(context)
-            adapter = MyBuildingRecyclerViewAdapter(Building.ITEMS,photos,this@BuildingFragment,args.isAdmin)
+            adapter = MyBuildingRecyclerViewAdapter(Building.ITEMS,photos,this@BuildingFragment,isAdmin)
         }
     }
 
@@ -150,7 +152,8 @@ class BuildingFragment : Fragment(), ToDoListener {
     }
 
     override fun onItemClick(position: Int) {
-        //TODO("Go to rooms section")
+        val action = BuildingFragmentDirections.actionBuildingFragmentRoomFragment(position,isAdmin)
+        findNavController().navigate(action)
     }
 
     override fun onItemLongClick(position: Int) {

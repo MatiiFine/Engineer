@@ -43,7 +43,7 @@ class LoginRegisterFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         if(FirebaseHandler.Authentication.isLoggedIn()){
-            checkAccessAndGoToFirstScreen()
+            goToFirstScreen()
         }
     }
 
@@ -91,7 +91,7 @@ class LoginRegisterFragment : Fragment() {
             FirebaseHandler.Authentication.login(email,password).apply{
                 addOnSuccessListener {
                     displayLoginSuccessMessage()
-                    checkAccessAndGoToFirstScreen()
+                    goToFirstScreen()
                 }
 
                 addOnFailureListener {
@@ -101,13 +101,9 @@ class LoginRegisterFragment : Fragment() {
         }
     }
 
-    private fun checkAccessAndGoToFirstScreen() {
-        var isAdmin: Boolean = false
-        FirebaseHandler.RealtimeDatabase.getUserAccessRef().get().addOnSuccessListener {
-            isAdmin = it.value as Boolean
-            val action = LoginRegisterFragmentDirections.actionLoginRegisterFragmentToBuildingFragment(isAdmin)
-            findNavController().navigate(action)
-        }
+    private fun goToFirstScreen() {
+        val action = LoginRegisterFragmentDirections.actionLoginRegisterFragmentToBuildingFragment()
+        findNavController().navigate(action)
     }
     private fun displayLoginFailureMessage() {
         Snackbar.make(
@@ -146,7 +142,7 @@ class LoginRegisterFragment : Fragment() {
                 addOnSuccessListener {
                     displayRegisterSuccessMessage()
                     FirebaseHandler.RealtimeDatabase.registerNewUserInDatabase()
-                    val action = LoginRegisterFragmentDirections.actionLoginRegisterFragmentToBuildingFragment(false)
+                    val action = LoginRegisterFragmentDirections.actionLoginRegisterFragmentToBuildingFragment()
                     findNavController().navigate(action)
                 }
 
