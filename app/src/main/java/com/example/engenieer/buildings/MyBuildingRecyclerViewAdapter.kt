@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import com.example.engenieer.R
 import com.example.engenieer.databinding.FragmentBuildingBinding
 import com.example.engenieer.helper.ToDoListener
 
@@ -33,14 +34,15 @@ class MyBuildingRecyclerViewAdapter(
         val item = values[position]
         holder.buildingName.text = item.name
         holder.buildingShortDescription.text = item.shortDescription
-        holder.buildingPicture.setImageBitmap(photos[position])
-        if (isAdmin)
-            holder.container.setOnClickListener {
-                eventListener.onItemClick(position)
+        if(position<photos.size)holder.buildingPicture.setImageBitmap(photos[position])
+        holder.container.setOnClickListener {
+            eventListener.onItemClick(position)
+        }
+        if (isAdmin) {
+            holder.container.setOnLongClickListener {
+                eventListener.onItemLongClick(position)
+                return@setOnLongClickListener true
             }
-        holder.container.setOnLongClickListener{
-            eventListener.onItemLongClick(position)
-            return@setOnLongClickListener true
         }
     }
 

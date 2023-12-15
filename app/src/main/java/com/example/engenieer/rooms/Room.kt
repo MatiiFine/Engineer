@@ -1,14 +1,73 @@
 package com.example.engenieer.rooms
 
+import android.graphics.Bitmap
 import android.os.Parcel
 import android.os.Parcelable
+import android.util.Log
+import com.example.engenieer.buildings.Building
+import com.example.engenieer.helper.FirebaseHandler
 import java.util.ArrayList
 
 object Room {
     val ITEMS: MutableList<RoomItem> = ArrayList()
+    val PHOTOS: ArrayList<Bitmap> = ArrayList()
+    val DOWNLOAD: MutableList<Pair<String, Boolean>> = ArrayList()
+    private var currentBuildingID: String = ""
 
-    private fun addItem(item: RoomItem) {
+    fun addItem(item: RoomItem): Boolean {
+        var found: Boolean = false
+        for(room in ITEMS)
+            if(room.id == item.id)found = true
+        if (!found) {
+            ITEMS.add(item)
+            DOWNLOAD.add(Pair(item.id,false))
+        }
+        return !found
+    }
+
+    fun checkBuilding(buildingID: String){
+        if (currentBuildingID.isEmpty()) currentBuildingID = buildingID
+        else if(buildingID!= currentBuildingID){
+            currentBuildingID = buildingID
+            ITEMS.clear()
+            PHOTOS.clear()
+            DOWNLOAD.clear()
+        }
+    }
+
+    fun addFromLocalData(item: RoomItem) {
         ITEMS.add(item)
+        DOWNLOAD.add(Pair(item.id,true))
+    }
+
+    fun addPhoto(resource: Bitmap) {
+        PHOTOS.add(resource)
+    }
+
+    fun deleteRoom(position: Int) {
+        deleteRoomPhoto(ITEMS[position])
+        deleteRoomFromDatabase(ITEMS[position])
+        ITEMS.removeAt(position)
+    }
+
+    private fun deleteRoomFromDatabase(roomItem: RoomItem) {
+        FirebaseHandler.RealtimeDatabase.getRoomsRef()
+            .child(roomItem.buildingID)
+            .child(roomItem.id)
+            .removeValue()
+            .addOnSuccessListener {
+                Log.i("roomDeletion","roomInfoDeleted")
+            }
+    }
+
+    private fun deleteRoomPhoto(roomItem: RoomItem) {
+        val defaultID = "default"
+        if(roomItem.photo!=defaultID){
+            FirebaseHandler.RealtimeDatabase.getBuildingStorageRef(roomItem.buildingID).child(roomItem.photo).delete()
+                .addOnSuccessListener {
+                    Log.i("roomDeletion", "photoDeleted")
+                }
+        }
     }
 }
 

@@ -104,6 +104,7 @@ class LoginRegisterFragment : Fragment() {
     private fun goToFirstScreen() {
         val action = LoginRegisterFragmentDirections.actionLoginRegisterFragmentToBuildingFragment()
         findNavController().navigate(action)
+        requireActivity().invalidateOptionsMenu()
     }
     private fun displayLoginFailureMessage() {
         Snackbar.make(
@@ -142,8 +143,7 @@ class LoginRegisterFragment : Fragment() {
                 addOnSuccessListener {
                     displayRegisterSuccessMessage()
                     FirebaseHandler.RealtimeDatabase.registerNewUserInDatabase()
-                    val action = LoginRegisterFragmentDirections.actionLoginRegisterFragmentToBuildingFragment()
-                    findNavController().navigate(action)
+                   goToFirstScreen()
                 }
 
                 addOnFailureListener {

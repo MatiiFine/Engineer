@@ -1,36 +1,50 @@
 package com.example.engenieer.buildings
 
+import android.graphics.Bitmap
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.Log
 import com.example.engenieer.helper.FirebaseHandler
-import java.util.ArrayList
+import kotlin.collections.ArrayList
 
 object Building {
 
     val ITEMS: MutableList<BuildingItem> = ArrayList()
+    val DOWNLOAD: MutableList<Pair<String, Boolean>> = ArrayList()
+    val PHOTOS: ArrayList<Bitmap> = ArrayList()
     var iterator: Int = 0
+    var adminAccess: Boolean = false
 
-    fun addItem(item: BuildingItem) {
+    fun setAccess(access: Boolean){
+        adminAccess = access
+    }
+
+    fun getAccess(): Boolean{
+        return adminAccess
+    }
+
+    fun addItem(item: BuildingItem): Boolean {
+        var found: Boolean = false
+        for (building in ITEMS)
+            if(building.buildingID == item.buildingID) found = true
+        if (!found){
+            ITEMS.add(item)
+            DOWNLOAD.add(Pair(item.buildingID,false))
+        }
+        return !found
+    }
+
+    fun addItemFromLocalData(item: BuildingItem){
         ITEMS.add(item)
-        iterator = 0
+        DOWNLOAD.add(Pair(item.buildingID,true))
+    }
+
+    fun addPhoto(photo: Bitmap){
+        PHOTOS.add(photo)
     }
 
     fun clearItems(){
         ITEMS.clear()
-    }
-
-    fun isAbleToDownload(): Boolean{
-        return iterator < ITEMS.size
-    }
-
-    fun getPhotoID(): String{
-        iterator += 1
-        return ITEMS[iterator-1].photo
-    }
-
-    fun getIter(): Int{
-        return iterator-1
     }
 
     fun deleteBuilding(position: Int){
@@ -40,8 +54,12 @@ object Building {
     }
 
     private fun deleteBuildingPhoto(photoID: String){
-        FirebaseHandler.RealtimeDatabase.getBuildingStorageRef(photoID).delete().addOnSuccessListener {
-            Log.i("buildingDeletion","photoDeleted")
+        val defaultID = "default"
+        if(photoID!=defaultID) {
+            FirebaseHandler.RealtimeDatabase.getBuildingStorageRef(photoID).delete()
+                .addOnSuccessListener {
+                    Log.i("buildingDeletion", "photoDeleted")
+                }
         }
     }
 

@@ -1,7 +1,10 @@
 package com.example.engenieer.buildings
 
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
+import android.transition.Transition
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,13 +13,18 @@ import android.widget.EditText
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.graphics.drawable.toBitmap
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
 import com.example.engenieer.helper.FirebaseHandler
 import com.example.engenieer.R
 import com.example.engenieer.databinding.FragmentAddBuildingBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import java.io.ByteArrayOutputStream
 import java.util.UUID
 
 
@@ -29,9 +37,10 @@ class AddBuildingFragment : Fragment() {
     private lateinit var buildingNameInput: EditText
     private lateinit var buildingShortDescInput: EditText
     private lateinit var buildingDescInput: EditText
-    private lateinit var photoID: String
-    private lateinit var buildingPhotoUri: Uri
+    private var photoID: String = ""
+    private var buildingPhotoUri: Uri = "".toUri()
     private var photoHasBeenChanged: Boolean = false
+    private val defaultID = "default"
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -111,16 +120,41 @@ class AddBuildingFragment : Fragment() {
 
     private fun uploadData() {
         val buildingId = System.currentTimeMillis().toString()
-        FirebaseHandler.RealtimeDatabase.addNewBuilding(
-            BuildingItem(
-                buildingId,
-                buildingNameInput.text.toString(),
-                buildingDescInput.text.toString(),
-                buildingShortDescInput.text.toString(),
-                photoID
-            )
+        val buildingItem = BuildingItem(
+            buildingId,
+            buildingNameInput.text.toString(),
+            buildingDescInput.text.toString(),
+            buildingShortDescInput.text.toString(),
+            photoID
         )
-        FirebaseHandler.RealtimeDatabase.uploadPhoto(photoID,buildingPhotoUri)
+        Building.addItemFromLocalData(buildingItem)
+        compressAndSendPhoto(buildingItem)
+    }
+
+    private fun compressAndSendPhoto(buildingItem: BuildingItem) {
+        if (buildingPhotoUri.toString().isEmpty()){
+            Building.addPhoto(resources.getDrawable(R.drawable.ic_default_building).toBitmap())
+            FirebaseHandler.RealtimeDatabase.addNewBuilding(buildingItem)
+        }else{
+        Glide.with(requireActivity())
+            .asBitmap()
+            .override(300,100)
+            .load(buildingPhotoUri)
+            .into(object : CustomTarget<Bitmap>(){
+                override fun onResourceReady(
+                    resource: Bitmap,
+                    transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?
+                ) {
+                    Building.addPhoto(resource)
+                    FirebaseHandler.RealtimeDatabase.uploadBuildingsPhoto(photoID,resource)
+                    FirebaseHandler.RealtimeDatabase.addNewBuilding(buildingItem)
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+                    //TODO("Not yet implemented")
+                }
+            })
+        }
     }
 
     private fun displaySaveFailedMessage() {
@@ -132,6 +166,7 @@ class AddBuildingFragment : Fragment() {
     }
 
     private fun validateInput(): Boolean {
+        if(buildingPhotoUri.toString().isEmpty()) photoID = defaultID
         return buildingNameInput.text.toString().isNotEmpty()
     }
 }

@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.graphics.drawable.toBitmap
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.example.engenieer.helper.FirebaseHandler
 import com.example.engenieer.R
 import com.example.engenieer.databinding.FragmentBuildingListBinding
@@ -26,21 +25,29 @@ class BuildingFragment : Fragment(), ToDoListener {
 
     private lateinit var binding: FragmentBuildingListBinding
     private lateinit var addBuildingButton: FloatingActionButton
-    private val photos: ArrayList<Bitmap> = ArrayList()
     private var isAdmin: Boolean = false
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentBuildingListBinding.inflate(inflater,container,false)
+        verifyAccess()
         with(binding.list){
             layoutManager = LinearLayoutManager(context)
-            clearBuildings()
             downloadBuildingsData()
-            adapter = MyBuildingRecyclerViewAdapter(Building.ITEMS,photos,this@BuildingFragment, isAdmin)
+            adapter = MyBuildingRecyclerViewAdapter(Building.ITEMS,Building.PHOTOS,this@BuildingFragment, Building.getAccess())
         }
 
         return binding.root
+    }
+
+    private fun verifyAccess() {
+        FirebaseHandler.RealtimeDatabase.getUserAccessRef().get().addOnSuccessListener {
+            isAdmin = it.value as Boolean
+            Building.setAccess(isAdmin)
+            if (isAdmin) addBuildingButton.visibility = View.VISIBLE
+            else addBuildingButton.visibility = View.GONE
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -55,11 +62,8 @@ class BuildingFragment : Fragment(), ToDoListener {
     }
 
     private fun setAddBuildingButtonVisibility() {
-        FirebaseHandler.RealtimeDatabase.getUserAccessRef().get().addOnSuccessListener {
-            isAdmin = it.value as Boolean
             if (isAdmin) addBuildingButton.visibility = View.VISIBLE
             else addBuildingButton.visibility = View.GONE
-        }
     }
 
     private fun setAddBuildingButtonListener() {
@@ -69,10 +73,6 @@ class BuildingFragment : Fragment(), ToDoListener {
     private fun addNewBuilding() {
         val action = BuildingFragmentDirections.actionBuildingFragmentToAddBuildingFragment()
         findNavController().navigate(action)
-    }
-
-    private fun clearBuildings() {
-        Building.clearItems()
     }
 
     private fun bindElements() {
@@ -85,6 +85,7 @@ class BuildingFragment : Fragment(), ToDoListener {
         var buildingDescription: String = ""
         var buildingShortDescription: String = ""
         var buildingPhoto: String = ""
+        var addedNewItem: Boolean = false
         FirebaseHandler.RealtimeDatabase.getBuildingsRef().addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (building in snapshot.children){
@@ -97,11 +98,12 @@ class BuildingFragment : Fragment(), ToDoListener {
                             "photo" -> buildingPhoto = buildingInfo.value.toString()
                         }
                     }
-                    addBuildingItem(buildingID,buildingName,buildingDescription,buildingShortDescription,buildingPhoto)
+                    addedNewItem = addBuildingItem(buildingID,buildingName,buildingDescription,buildingShortDescription,buildingPhoto)
+                    if (addedNewItem){
+                        if(Building.PHOTOS.size<Building.ITEMS.size)prepareDefaultBuildingsPhoto()
+                    }
                 }
-                prepareDefaultBuildingsPhoto()
                 downloadBuildingsPhoto()
-                reloadAdapter()
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -111,31 +113,53 @@ class BuildingFragment : Fragment(), ToDoListener {
     }
 
     private fun prepareDefaultBuildingsPhoto() {
-        for (item in Building.ITEMS){
-              photos.add(resources.getDrawable(R.drawable.ic_default_building).toBitmap())
-        }
+              Building.PHOTOS.add(resources.getDrawable(R.drawable.ic_default_building).toBitmap())
     }
 
     private fun downloadBuildingsPhoto() {
-        if(Building.isAbleToDownload()){
-            val photoID = Building.getPhotoID()
-            if (photoID.isNotEmpty()){
-                FirebaseHandler.RealtimeDatabase.getBuildingStorageRef(photoID)
-                    .getBytes(4196 * 4196).addOnSuccessListener {
-                        var image = it.toBitmap()
-                        photos[Building.getIter()] = image
-                        reloadAdapter()
-                        downloadBuildingsPhoto()
-                    }
+        for (building in Building.ITEMS){
+            val status = findDownloadStatus(building)
+            if (!status){ //if false photo hasn't been downloaded
+                if (building.photo == "default"){
+                    val index = Building.ITEMS.indexOf(building)
+                    Building.PHOTOS[index] = resources.getDrawable(R.drawable.ic_default_building).toBitmap()
+                    changeState(building)
+                    reloadAdapter()
+                }else {
+                    FirebaseHandler.RealtimeDatabase.getBuildingStorageRef(building.photo)
+                        .getBytes(4196 * 4196).addOnSuccessListener {
+                            var image = it.toBitmap()
+                            val index = Building.ITEMS.indexOf(building)
+                            Building.PHOTOS[index] = image
+                            changeState(building)
+                            reloadAdapter()
+                        }
+                }
             }
-        }else{
-            reloadAdapter()
+        }
+        reloadAdapter()
+    }
+
+    private fun changeState(building: BuildingItem) {
+        for (element in Building.DOWNLOAD){
+            if(element.first == building.buildingID) {
+                val index = Building.DOWNLOAD.indexOf(element)
+                Building.DOWNLOAD[index] = Pair(building.buildingID,true)
+            }
         }
     }
 
+    private fun findDownloadStatus(building: BuildingItem): Boolean {
+        for (element in Building.DOWNLOAD){
+            if(element.first == building.buildingID)
+                return element.second
+        }
+        return true //if nothing has been found return true means "don't download"
+    }
 
-    private fun addBuildingItem(id: String, name: String, desc: String, shortDesc: String, photo: String) {
-        Building.addItem(
+
+    private fun addBuildingItem(id: String, name: String, desc: String, shortDesc: String, photo: String): Boolean {
+        return Building.addItem(
             BuildingItem(id,name,desc,shortDesc,photo)
         )
     }
@@ -143,7 +167,7 @@ class BuildingFragment : Fragment(), ToDoListener {
     private fun reloadAdapter(){
         with(binding.list){
             layoutManager = LinearLayoutManager(context)
-            adapter = MyBuildingRecyclerViewAdapter(Building.ITEMS,photos,this@BuildingFragment,isAdmin)
+            adapter = MyBuildingRecyclerViewAdapter(Building.ITEMS,Building.PHOTOS,this@BuildingFragment,Building.getAccess())
         }
     }
 
@@ -152,7 +176,7 @@ class BuildingFragment : Fragment(), ToDoListener {
     }
 
     override fun onItemClick(position: Int) {
-        val action = BuildingFragmentDirections.actionBuildingFragmentRoomFragment(position,isAdmin)
+        val action = BuildingFragmentDirections.actionBuildingFragmentRoomFragment(position,Building.getAccess())
         findNavController().navigate(action)
     }
 
@@ -182,7 +206,7 @@ class BuildingFragment : Fragment(), ToDoListener {
 
     private fun deleteBuilding(position: Int){
         Building.deleteBuilding(position)
-        photos.removeAt(position)
+        Building.PHOTOS.removeAt(position)
         reloadAdapter()
         showMessage(1)
     }

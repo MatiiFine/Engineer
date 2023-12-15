@@ -1,9 +1,12 @@
 package com.example.engenieer.helper
 
+import android.graphics.Bitmap
 import android.net.Uri
-import android.provider.ContactsContract.Data
 import com.example.engenieer.buildings.BuildingDB
 import com.example.engenieer.buildings.BuildingItem
+import com.example.engenieer.rooms.RoomDB
+import com.example.engenieer.rooms.RoomItem
+import com.google.android.gms.auth.api.signin.internal.Storage
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.ktx.auth
@@ -12,12 +15,14 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import java.io.ByteArrayOutputStream
 
 object FirebaseHandler {
     object RealtimeDatabase{
         private const val usersPath: String = "users"
         private const val buildingsPath: String = "buildings"
         private const val storagePath: String = "storage"
+        private const val roomsPath: String = "rooms"
 
         private val firebaseDatabase by lazy {
             Firebase.database("https://engenieer-45947-default-rtdb.europe-west1.firebasedatabase.app/")
@@ -76,9 +81,43 @@ object FirebaseHandler {
             )
         }
 
-        fun uploadPhoto(photoID: String, uri: Uri?){
-            getBuildingsStorageRef().child(photoID).putFile(uri!!)
+        fun uploadBuildingsPhoto(photoID: String, resource: Bitmap){
+            getBuildingsStorageRef().child(photoID).putBytes(bitmapToByte(resource))
         }
+
+        private fun getRoomsStorageRef(): StorageReference{
+            return getStorageRef().child(roomsPath)
+        }
+
+        fun getRoomStorageRef(buildingID: String): StorageReference{
+            return getRoomsStorageRef().child(buildingID)
+        }
+
+        fun uploadRoomsPhoto(photoID: String,buildingID: String, resource: Bitmap){
+            getRoomStorageRef(buildingID).child(photoID).putBytes(bitmapToByte(resource))
+        }
+
+        fun getRoomsRef(): DatabaseReference{
+            return firebaseDatabase.reference.child(roomsPath)
+        }
+
+        fun addNewRoom(room: RoomItem){
+            getRoomsRef().child(room.buildingID).child(room.id).setValue(
+                RoomDB(
+                    room.name,
+                    room.description,
+                    room.shortDescription,
+                    room.photo
+                )
+            )
+        }
+
+        private fun bitmapToByte(bitmap: Bitmap): ByteArray {
+            val stream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+            return stream.toByteArray()
+        }
+
     }
 
     object Authentication{

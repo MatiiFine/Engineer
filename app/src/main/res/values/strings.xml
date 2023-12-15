@@ -20,7 +20,7 @@
     <string name="building_description_hint">Description</string>
     <string name="save_building_failed">Name can not be empty</string>
     <string name="delete_building_title">Delete</string>
-    <string name="delete_building_msg">Are you sure to delete this building and all connected elements with him?</string>
+    <string name="delete_building_msg">Are you sure to delete this building and all connected elements with it?</string>
     <string name="delete_positive_btn">Yes, sure</string>
     <string name="delete_negative_btn">No</string>
     <string name="building_delete_confirmed">Building has been deleted</string>
@@ -31,4 +31,9 @@
     <string name="room_name_hint">Room name</string>
     <string name="room_short_description_hint">Room description</string>
     <string name="room_description_hint">Description</string>
+    <string name="save_room_failed">Name can not be empty</string>
+    <string name="delete_room_msg">Are you sure to delete this room and all connected elements with it?</string>
+    <string name="room_delete_confirmed">Room has been deleted</string>
+    <string name="room_delete_declined">The deletion has been canceled</string>
+    <string name="delete_room_title">Delete</string>
 </resources>

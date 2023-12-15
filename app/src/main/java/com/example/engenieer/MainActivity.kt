@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.OnBackPressedDispatcher
 import androidx.navigation.findNavController
 import com.example.engenieer.databinding.ActivityMainBinding
 import com.example.engenieer.helper.FirebaseHandler
@@ -16,6 +18,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val dispatcher: OnBackPressedDispatcher = onBackPressedDispatcher
+        dispatcher.addCallback(this,overrideCallback)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -45,9 +50,27 @@ class MainActivity : AppCompatActivity() {
             R.id.logout -> {
                 FirebaseHandler.Authentication.logout()
                 findNavController(R.id.nav_host_fragment_activity_main).navigate(R.id.loginRegisterFragment)
+                invalidateOptionsMenu()
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private val overrideCallback: OnBackPressedCallback = object : OnBackPressedCallback(true){
+        override fun handleOnBackPressed() {
+            val navController = findNavController(R.id.nav_host_fragment_activity_main)
+            val currentDestination = navController.currentDestination
+            currentDestination?.let { dest ->
+                if (dest.id == R.id.loginRegisterFragment || dest.id == R.id.buildingFragment) {
+                    finish()
+                    return
+                }
+                else if (dest.id == R.id.roomFragment) {
+                    findNavController(R.id.nav_host_fragment_activity_main).navigate(R.id.buildingFragment)
+                }
+                else navController.popBackStack()
+            }
+        }
     }
 
 }
