@@ -6,12 +6,16 @@ import android.os.Parcelable
 import android.util.Log
 import com.example.engenieer.buildings.Building
 import com.example.engenieer.helper.FirebaseHandler
-import java.util.ArrayList
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
+import kotlin.collections.ArrayList
 
 object Room {
     val ITEMS: MutableList<RoomItem> = ArrayList()
     val PHOTOS: ArrayList<Bitmap> = ArrayList()
     val DOWNLOAD: MutableList<Pair<String, Boolean>> = ArrayList()
+    val ROOMS_OF_BUILDING: MutableList<Pair<String,String>> = ArrayList()
+    val ROOMS_PHOTOS_OF_BUILDING: MutableList<Pair<String,String>> = ArrayList()
     private var currentBuildingID: String = ""
 
     fun addItem(item: RoomItem): Boolean {
@@ -48,6 +52,8 @@ object Room {
         deleteRoomPhoto(ITEMS[position])
         deleteRoomFromDatabase(ITEMS[position])
         ITEMS.removeAt(position)
+        DOWNLOAD.removeAt(position)
+        PHOTOS.removeAt(position)
     }
 
     private fun deleteRoomFromDatabase(roomItem: RoomItem) {
@@ -68,6 +74,72 @@ object Room {
                     Log.i("roomDeletion", "photoDeleted")
                 }
         }
+    }
+
+    fun deleteRoomsOfBuilding(buildingID: String, ref: DatabaseReference, listener: ValueEventListener) {
+        val defaultID = "default"
+        var toDelete = ROOMS_OF_BUILDING.size
+        var rooms = 0
+        var photos = 0
+        FirebaseHandler.RealtimeDatabase.getRoomsRef().child(buildingID).removeValue()
+        for(room in ROOMS_PHOTOS_OF_BUILDING){
+            if(room.second != defaultID){
+                FirebaseHandler.RealtimeDatabase.getRoomStorageRef(buildingID).child(room.second).delete()
+                    .addOnSuccessListener {
+
+                    }
+            }
+        }
+        ref.removeEventListener(listener)
+    }
+
+    fun getCurrentBuildingID(): String{
+        return currentBuildingID
+    }
+
+    fun clear(){
+        ITEMS.clear()
+        DOWNLOAD.clear()
+        PHOTOS.clear()
+        ROOMS_OF_BUILDING.clear()
+        ROOMS_PHOTOS_OF_BUILDING.clear()
+    }
+
+    fun addRoomToDeletionList(buildingID: String, roomID: String, roomPhoto: String) {
+        ROOMS_OF_BUILDING.add(Pair(buildingID,roomID))
+        ROOMS_PHOTOS_OF_BUILDING.add(Pair(buildingID,roomPhoto))
+    }
+
+    fun editLocalData(roomItem: RoomItem): String {
+        val element = findElementByID(roomItem.id)
+        val index = ITEMS.indexOf(element)
+        ITEMS[index] = roomItem
+        DOWNLOAD[index] = Pair(roomItem.id,true)
+
+        return element.photo
+    }
+
+    private fun findElementByID(id: String): RoomItem {
+        for (item in ITEMS){
+            if (item.id == id)
+                return item
+        }
+        return null!!
+    }
+
+    fun deleteOldRoomPhoto(oldPhotoID: String, buildingID: String) {
+        val defaultID = "default"
+        if (oldPhotoID!=defaultID){
+            FirebaseHandler.RealtimeDatabase.getRoomStorageRef(buildingID).child(oldPhotoID).delete()
+                .addOnSuccessListener {
+                Log.i("roomDeletion", "photoDeleted")
+            }
+        }
+    }
+
+    fun editPhoto(resource: Bitmap, roomItem: RoomItem) {
+        val index = ITEMS.indexOf(roomItem)
+        PHOTOS[index] = resource
     }
 }
 

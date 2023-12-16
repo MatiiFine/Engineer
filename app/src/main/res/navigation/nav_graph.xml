@@ -34,6 +34,14 @@
         <action
             android:id="@+id/action_addBuildingFragment_to_buildingFragment"
             app:destination="@id/buildingFragment" />
+        <argument
+            android:name="editStatus"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        <argument
+            android:name="position"
+            app:argType="integer"
+            android:defaultValue="0" />
     </fragment>
     <fragment
         android:id="@+id/roomFragment"
@@ -62,5 +70,13 @@
         <argument
             android:name="buildingPosition"
             app:argType="integer" />
+        <argument
+            android:name="editStatus"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        <argument
+            android:name="position"
+            app:argType="integer"
+            android:defaultValue="0" />
     </fragment>
 </navigation>

@@ -36,4 +36,8 @@
     <string name="room_delete_confirmed">Room has been deleted</string>
     <string name="room_delete_declined">The deletion has been canceled</string>
     <string name="delete_room_title">Delete</string>
+    <string name="edit_building_btn">Edit building</string>
+    <string name="edit_building_pressed">Building edit option has been chosen</string>
+    <string name="edit_room_pressed">Room edit option has  been chosen</string>
+    <string name="edit_room_btn">Edit room</string>
 </resources>

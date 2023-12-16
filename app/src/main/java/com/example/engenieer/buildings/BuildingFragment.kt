@@ -15,10 +15,12 @@ import com.example.engenieer.helper.FirebaseHandler
 import com.example.engenieer.R
 import com.example.engenieer.databinding.FragmentBuildingListBinding
 import com.example.engenieer.helper.ToDoListener
+import com.example.engenieer.rooms.Room
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 
 class BuildingFragment : Fragment(), ToDoListener {
@@ -26,6 +28,9 @@ class BuildingFragment : Fragment(), ToDoListener {
     private lateinit var binding: FragmentBuildingListBinding
     private lateinit var addBuildingButton: FloatingActionButton
     private var isAdmin: Boolean = false
+    val deleteRef = FirebaseHandler.RealtimeDatabase.getRoomsRef()
+    private  var deleteDataListener: ValueEventListener? =null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -47,6 +52,7 @@ class BuildingFragment : Fragment(), ToDoListener {
             Building.setAccess(isAdmin)
             if (isAdmin) addBuildingButton.visibility = View.VISIBLE
             else addBuildingButton.visibility = View.GONE
+            reloadAdapter()
         }
     }
 
@@ -198,6 +204,12 @@ class BuildingFragment : Fragment(), ToDoListener {
             setNegativeButton(getString(R.string.delete_negative_btn)){ dialog, id ->
                 showMessage(2)
             }
+
+            setNeutralButton(getString(R.string.edit_building_btn)){ dialog, id ->
+                val action = BuildingFragmentDirections.actionBuildingFragmentToAddBuildingFragment(editStatus = true)
+                findNavController().navigate(action)
+                showMessage(3)
+            }
         }
 
         val dialog = builder.create()
@@ -205,10 +217,45 @@ class BuildingFragment : Fragment(), ToDoListener {
     }
 
     private fun deleteBuilding(position: Int){
-        Building.deleteBuilding(position)
-        Building.PHOTOS.removeAt(position)
+        val buildingID = Building.deleteBuilding(position)
+        Room.clear()
+        downloadDataOfRoomsToDelete(buildingID)
         reloadAdapter()
         showMessage(1)
+    }
+
+    private fun downloadDataOfRoomsToDelete(buildingID: String) {
+        var roomID: String = ""
+        var roomPhoto: String = ""
+        deleteDataListener = deleteRef.addValueEventListener(object :
+            ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (building in snapshot.children){
+                    if (building.key.toString() == buildingID){
+                        for (room in building.children){
+                            roomID = room.key.toString()
+                            for (roomInfo in room.children){
+                                when(roomInfo.key.toString()){
+                                    "photo" -> roomPhoto = roomInfo.value.toString()
+                                }
+                            }
+                            Room.addRoomToDeletionList(buildingID, roomID, roomPhoto)
+                        }
+                    }
+                }
+                deleteDataListener?.let { Room.deleteRoomsOfBuilding(buildingID, deleteRef, it) }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                //TODO("Not yet implemented")
+            }
+        })
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (deleteDataListener != null)
+            deleteRef.removeEventListener(deleteDataListener!!)
     }
 
     private fun showMessage(i: Int) {
@@ -216,6 +263,7 @@ class BuildingFragment : Fragment(), ToDoListener {
         when(i){
             1 -> message = getString(R.string.building_delete_confirmed)
             2 -> message = getString(R.string.building_delete_declined)
+            3 -> message = getString(R.string.edit_building_pressed)
         }
         Snackbar.make(
             binding.root,

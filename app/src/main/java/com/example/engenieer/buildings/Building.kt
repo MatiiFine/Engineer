@@ -12,7 +12,6 @@ object Building {
     val ITEMS: MutableList<BuildingItem> = ArrayList()
     val DOWNLOAD: MutableList<Pair<String, Boolean>> = ArrayList()
     val PHOTOS: ArrayList<Bitmap> = ArrayList()
-    var iterator: Int = 0
     var adminAccess: Boolean = false
 
     fun setAccess(access: Boolean){
@@ -47,13 +46,17 @@ object Building {
         ITEMS.clear()
     }
 
-    fun deleteBuilding(position: Int){
+    fun deleteBuilding(position: Int): String{
+        val buildingID = ITEMS[position].buildingID
         deleteBuildingPhoto(ITEMS[position].photo)
         deleteBuildingFromDatabase(ITEMS[position].buildingID)
         ITEMS.removeAt(position)
+        DOWNLOAD.removeAt(position)
+        PHOTOS.removeAt(position)
+        return buildingID
     }
 
-    private fun deleteBuildingPhoto(photoID: String){
+    fun deleteBuildingPhoto(photoID: String){
         val defaultID = "default"
         if(photoID!=defaultID) {
             FirebaseHandler.RealtimeDatabase.getBuildingStorageRef(photoID).delete()
@@ -67,6 +70,28 @@ object Building {
         FirebaseHandler.RealtimeDatabase.getBuildingRef(buildingID).removeValue().addOnSuccessListener {
             Log.i("buildingDeletion","buildingInfoDeleted")
         }
+    }
+
+    fun editLocalData(buildingItem: BuildingItem): String {
+        val element = findElementByID(buildingItem.buildingID)
+        val index = ITEMS.indexOf(element)
+        ITEMS[index] = buildingItem
+        DOWNLOAD[index] = Pair(buildingItem.buildingID,true)
+
+        return element.photo
+    }
+
+    private fun findElementByID(buildingID: String): BuildingItem {
+        for (item in ITEMS){
+            if (item.buildingID == buildingID)
+                return item
+        }
+        return null!!
+    }
+
+    fun editPhoto(resource: Bitmap, buildingItem: BuildingItem) {
+        val index = ITEMS.indexOf(buildingItem)
+        PHOTOS[index] = resource
     }
 
 }

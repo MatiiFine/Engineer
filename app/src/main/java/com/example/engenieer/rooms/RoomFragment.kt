@@ -60,7 +60,6 @@ class RoomFragment : Fragment(), ToDoListener {
     }
 
     private fun downloadRoomsData() {
-        currentBuildingID = Building.ITEMS[args.buildingPosition].buildingID
         var roomID: String = ""
         var roomName: String = ""
         var roomDescription: String = ""
@@ -71,7 +70,7 @@ class RoomFragment : Fragment(), ToDoListener {
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (building in snapshot.children){
-                    if (building.key.toString() == currentBuildingID){
+                    if (building.key.toString() == Room.getCurrentBuildingID()){
                         for (room in building.children){
                             roomID = room.key.toString()
                             for (roomInfo in room.children){
@@ -210,6 +209,12 @@ class RoomFragment : Fragment(), ToDoListener {
             setNegativeButton(getString(R.string.delete_negative_btn)){ dialog, id ->
                 showMessage(2)
             }
+
+            setNeutralButton(getString(R.string.edit_room_btn)){ dialog, id ->
+                val action = RoomFragmentDirections.actionRoomFragmentToAddRoomFragment(args.buildingPosition,true,position)
+                findNavController().navigate(action)
+                showMessage(3)
+            }
         }
 
         val dialog = builder.create()
@@ -228,6 +233,7 @@ class RoomFragment : Fragment(), ToDoListener {
         when(i){
             1 -> message = getString(R.string.room_delete_confirmed)
             2 -> message = getString(R.string.room_delete_declined)
+            3 -> message = getString(R.string.edit_room_pressed)
         }
         Snackbar.make(
             binding.root,

@@ -42,6 +42,17 @@ class AddRoomFragment : Fragment() {
     private val args: AddRoomFragmentArgs by navArgs()
     private val defaultID = "default"
 
+
+    //variables to edit room
+    private var position: Int = 0
+    private lateinit var photo: Bitmap
+    private lateinit var name: String
+    private lateinit var shortDesc: String
+    private lateinit var desc: String
+    private lateinit var roomToEdit: String
+    private lateinit var oldPhotoID: String
+    private lateinit var buildingID: String
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -56,6 +67,27 @@ class AddRoomFragment : Fragment() {
         bindElements()
         setButtons()
         setDefaultPhoto()
+        checkIfFragmentIsInEditState()
+    }
+
+    private fun checkIfFragmentIsInEditState() {
+        if (args.editStatus)
+            loadLocalData()
+    }
+
+    private fun loadLocalData() {
+        position = args.position
+        photo = Room.PHOTOS[position]
+        name = Room.ITEMS[position].name
+        shortDesc = Room.ITEMS[position].shortDescription
+        desc = Room.ITEMS[position].description
+        roomToEdit = Room.ITEMS[position].id
+        buildingID = Room.ITEMS[position].buildingID
+
+        roomPhoto.setImageBitmap(photo)
+        roomNameInput.setText(name)
+        roomShortDescInput.setText(shortDesc)
+        roomDescInput.setText(desc)
     }
 
     private fun setDefaultPhoto() {
@@ -101,12 +133,61 @@ class AddRoomFragment : Fragment() {
         isValid = validateInput()
         if (!isValid) displaySaveFailedMessage()
         else{
-            uploadData()
-            returnToBuildingList()
+            if (args.editStatus){
+                updateData()
+                returnToRoomList()
+            }else {
+                uploadData()
+                returnToRoomList()
+            }
         }
     }
 
-    private fun returnToBuildingList() {
+    private fun updateData() {
+        if(roomPhotoUri.toString().isNotEmpty())
+            createPhotoID()
+        else
+            photoID = oldPhotoID
+        val roomItem = RoomItem(
+            roomToEdit,
+            roomNameInput.text.toString(),
+            roomDescInput.text.toString(),
+            roomShortDescInput.text.toString(),
+            photoID,
+            buildingID
+        )
+        val oldPhotoID = Room.editLocalData(roomItem)
+        if (roomPhotoUri.toString().isNotEmpty())
+            Room.deleteOldRoomPhoto(oldPhotoID,buildingID)
+        compressAndSendPhotoAndEditData(roomItem)
+    }
+
+    private fun compressAndSendPhotoAndEditData(roomItem: RoomItem) {
+        if (roomPhotoUri.toString().isEmpty()){
+            FirebaseHandler.RealtimeDatabase.addNewRoom(roomItem)
+        }else{
+            Glide.with(requireActivity())
+                .asBitmap()
+                .override(300,100)
+                .load(roomPhotoUri)
+                .into(object : CustomTarget<Bitmap>(){
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?
+                    ) {
+                        Room.editPhoto(resource,roomItem)
+                        FirebaseHandler.RealtimeDatabase.uploadRoomsPhoto(photoID,buildingID,resource)
+                        FirebaseHandler.RealtimeDatabase.addNewRoom(roomItem)
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                        //TODO("Not yet implemented")
+                    }
+                })
+        }
+    }
+
+    private fun returnToRoomList() {
         val action = AddRoomFragmentDirections.actionAddRoomFragmentToRoomFragment(args.buildingPosition,true)
         findNavController().navigate(action)
     }

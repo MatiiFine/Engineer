@@ -17,6 +17,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.example.engenieer.helper.FirebaseHandler
@@ -41,6 +42,16 @@ class AddBuildingFragment : Fragment() {
     private var buildingPhotoUri: Uri = "".toUri()
     private var photoHasBeenChanged: Boolean = false
     private val defaultID = "default"
+    private val args: AddBuildingFragmentArgs by navArgs()
+
+    //variables for Editing building
+    private var position: Int = 0
+    private lateinit var photo: Bitmap
+    private lateinit var name: String
+    private lateinit var shortDesc: String
+    private lateinit var desc: String
+    private lateinit var buildingToEdit: String
+    private lateinit var oldPhotoID: String
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -54,6 +65,27 @@ class AddBuildingFragment : Fragment() {
         bindElements()
         setButtons()
         setDefaultPhoto()
+        checkIfFragmentIsInEditState()
+    }
+
+    private fun checkIfFragmentIsInEditState() {
+        if (args.editStatus)
+            loadLocalData()
+    }
+
+    private fun loadLocalData() {
+        position = args.position
+        photo = Building.PHOTOS[position]
+        name = Building.ITEMS[position].name
+        shortDesc = Building.ITEMS[position].shortDescription
+        desc = Building.ITEMS[position].description
+        buildingToEdit = Building.ITEMS[position].buildingID
+        oldPhotoID = Building.ITEMS[position].photo
+
+        buildingPhoto.setImageBitmap(photo)
+        buildingNameInput.setText(name)
+        buildingShortDescInput.setText(shortDesc)
+        buildingDescInput.setText(desc)
     }
 
     private fun setDefaultPhoto() {
@@ -108,8 +140,58 @@ class AddBuildingFragment : Fragment() {
         isValid = validateInput()
         if (!isValid) displaySaveFailedMessage()
         else{
-            uploadData()
-            returnToBuildingList()
+            if (args.editStatus){
+                updateData()
+                returnToBuildingList()
+            }
+            else {
+                uploadData()
+                returnToBuildingList()
+            }
+        }
+    }
+
+    private fun updateData() {
+        if (buildingPhotoUri.toString().isNotEmpty())
+            createPhotoID()
+        else
+            photoID = oldPhotoID
+        val buildingItem = BuildingItem(
+            buildingToEdit,
+            buildingNameInput.text.toString(),
+            buildingDescInput.text.toString(),
+            buildingShortDescInput.text.toString(),
+            photoID
+        )
+        val oldPhotoID = Building.editLocalData(buildingItem)
+        if(buildingPhotoUri.toString().isNotEmpty())
+            Building.deleteBuildingPhoto(oldPhotoID) //if not empty means new photo has been chosen
+        compressAndSendPhotoAndEditData(buildingItem)
+
+    }
+
+    private fun compressAndSendPhotoAndEditData(buildingItem: BuildingItem) {
+        if (buildingPhotoUri.toString().isEmpty()){
+            FirebaseHandler.RealtimeDatabase.addNewBuilding(buildingItem)
+        }else{
+            Glide.with(requireActivity())
+                .asBitmap()
+                .override(300,100)
+                .load(buildingPhotoUri)
+                .into(object : CustomTarget<Bitmap>(){
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?
+                    ) {
+                        Building.editPhoto(resource,buildingItem)
+                        FirebaseHandler.RealtimeDatabase.uploadBuildingsPhoto(photoID,resource)
+                        FirebaseHandler.RealtimeDatabase.addNewBuilding(buildingItem)
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                        //TODO("Not yet implemented")
+                    }
+                })
         }
     }
 
