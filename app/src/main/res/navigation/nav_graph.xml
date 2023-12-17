@@ -58,6 +58,12 @@
         <action
             android:id="@+id/action_roomFragment_to_addRoomFragment"
             app:destination="@id/addRoomFragment" />
+        <action
+            android:id="@+id/action_roomFragment_to_roomManagementFragment"
+            app:destination="@id/roomManagementFragment" />
+        <action
+            android:id="@+id/action_roomFragment_to_previewFragment"
+            app:destination="@id/previewFragment" />
     </fragment>
     <fragment
         android:id="@+id/addRoomFragment"
@@ -74,6 +80,29 @@
             android:name="editStatus"
             app:argType="boolean"
             android:defaultValue="false" />
+        <argument
+            android:name="position"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
+    <fragment
+        android:id="@+id/roomManagementFragment"
+        android:name="com.example.engenieer.roomManagement.RoomManagementFragment"
+        android:label="fragment_room_management"
+        tools:layout="@layout/fragment_room_management" >
+        <argument
+            android:name="position"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <action
+            android:id="@+id/action_roomManagementFragment_to_previewFragment"
+            app:destination="@id/previewFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/previewFragment"
+        android:name="com.example.engenieer.roomManagement.PreviewFragment"
+        android:label="fragment_preview"
+        tools:layout="@layout/fragment_preview" >
         <argument
             android:name="position"
             app:argType="integer"

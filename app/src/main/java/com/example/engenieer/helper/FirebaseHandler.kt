@@ -23,6 +23,7 @@ object FirebaseHandler {
         private const val buildingsPath: String = "buildings"
         private const val storagePath: String = "storage"
         private const val roomsPath: String = "rooms"
+        private const val eqPath: String = "equipment"
 
         private val firebaseDatabase by lazy {
             Firebase.database("https://engenieer-45947-default-rtdb.europe-west1.firebasedatabase.app/")
@@ -116,6 +117,14 @@ object FirebaseHandler {
             val stream = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
             return stream.toByteArray()
+        }
+
+        private fun getEquipmentRef(): DatabaseReference{
+            return firebaseDatabase.reference.child(eqPath)
+        }
+
+        fun getRoomsEquipmentRef(roomID: String): DatabaseReference{
+            return getEquipmentRef().child(roomID)
         }
 
     }

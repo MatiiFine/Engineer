@@ -141,6 +141,10 @@ object Room {
         val index = ITEMS.indexOf(roomItem)
         PHOTOS[index] = resource
     }
+
+    fun getItem(position: Int): RoomItem {
+        return ITEMS[position]
+    }
 }
 
 data class RoomItem(val id: String, val name: String, val description: String, val shortDescription: String, val photo: String, val buildingID: String): Parcelable {

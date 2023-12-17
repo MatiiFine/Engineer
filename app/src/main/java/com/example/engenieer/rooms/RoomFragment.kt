@@ -188,7 +188,13 @@ class RoomFragment : Fragment(), ToDoListener {
     }
 
     override fun onItemClick(position: Int) {
-        //TODO("Not yet implemented")
+        if (args.isAdmin){
+            val action = RoomFragmentDirections.actionRoomFragmentToRoomManagementFragment(position)
+            findNavController().navigate(action)
+        }else{
+            val action = RoomFragmentDirections.actionRoomFragmentToPreviewFragment(position)
+            findNavController().navigate(action)
+        }
     }
 
     override fun onItemLongClick(position: Int) {
