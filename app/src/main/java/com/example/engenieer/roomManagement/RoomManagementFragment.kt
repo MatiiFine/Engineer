@@ -46,7 +46,8 @@ class RoomManagementFragment : Fragment() {
     }
 
     private fun manage() {
-        //TODO("Not yet implemented")
+        val action = RoomManagementFragmentDirections.actionRoomManagementFragmentToManageDesksFragment(args.position)
+        findNavController().navigate(action)
     }
 
     private fun preview() {

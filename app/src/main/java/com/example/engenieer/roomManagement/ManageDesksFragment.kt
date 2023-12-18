@@ -1,16 +1,21 @@
 package com.example.engenieer.roomManagement
 
+import android.content.Context
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.navigation.fragment.navArgs
 import com.example.engenieer.R
 import com.example.engenieer.databinding.FragmentManageDesksBinding
@@ -24,13 +29,13 @@ import com.google.firebase.database.ValueEventListener
 class ManageDesksFragment : Fragment() {
 
     private lateinit var binding: FragmentManageDesksBinding
-    private val args: RoomManagementFragmentArgs by navArgs()
+    private val args: ManageDesksFragmentArgs by navArgs()
     private lateinit var roomName: TextView
     private lateinit var equipmentInput: EditText
     private lateinit var addBtn: Button
     private lateinit var removeButton: Button
     private lateinit var spinner: Spinner
-    private lateinit var listOfEquipment: List<String>
+    private var listOfEquipment: ArrayList<String> = ArrayList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,13 +59,13 @@ class ManageDesksFragment : Fragment() {
         var position: String = ""
         FirebaseHandler.RealtimeDatabase.getRoomsEquipmentRef(room.id).addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                for(roomsEquipment in snapshot.children){
-                    for(equipment in roomsEquipment.children){
-                        position = equipment.key.toString()
-                        listOfEquipment = listOfEquipment + position
-                    }
+                listOfEquipment.clear()
+                for(equipment in snapshot.children){
+                    position = equipment.key.toString()
+                    listOfEquipment.add(position)
                 }
-                //val adapter: ArrayAdapter = ArrayAdapter(context,spinner,listOfEquipment)
+                val adapter = ArrayAdapter(requireContext(),android.R.layout.simple_spinner_item,listOfEquipment)
+                spinner.adapter = adapter
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -74,7 +79,7 @@ class ManageDesksFragment : Fragment() {
         equipmentInput = binding.newEquipmentInput
         addBtn = binding.addNewBtn
         removeButton = binding.removeBtn
-        spinner = binding.spinner
+        spinner = binding.spinnerManage
     }
 
     private fun setValue() {
@@ -88,10 +93,24 @@ class ManageDesksFragment : Fragment() {
     }
 
     private fun remove() {
-        //TODO("Not yet implemented")
+        val equipment = spinner.selectedItem
+        if (equipment != null)
+            FirebaseHandler.RealtimeDatabase.deleteEquipment(Room.getItem(args.position).id, equipment.toString())
     }
 
     private fun add() {
-        //TODO("Not yet implemented")
+        if (equipmentInput.text.toString().isNotEmpty()) {
+            FirebaseHandler.RealtimeDatabase.addNewEquipment(
+                Room.getItem(args.position).id,
+                equipmentInput.text.toString()
+            )
+            equipmentInput.setText("")
+            /*val view: View? = binding.root
+            if (view != null) {
+                val inputMethodManager =
+                    requireContext().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+            }*/
+        }
     }
 }

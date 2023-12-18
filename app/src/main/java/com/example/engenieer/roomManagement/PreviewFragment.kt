@@ -1,17 +1,23 @@
 package com.example.engenieer.roomManagement
 
+import android.R
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsSpinner
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.navigation.fragment.navArgs
 import com.example.engenieer.databinding.FragmentPreviewBinding
+import com.example.engenieer.helper.FirebaseHandler
 import com.example.engenieer.rooms.Room
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 
 
 class PreviewFragment : Fragment() {
@@ -23,6 +29,7 @@ class PreviewFragment : Fragment() {
     private lateinit var book_btn: Button
     private lateinit var book_all_btn: Button
     private lateinit var description: TextView
+    private var listOfEquipment: ArrayList<String> = ArrayList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,6 +45,29 @@ class PreviewFragment : Fragment() {
         bindElements()
         setValue()
         setListeners()
+        downloadAndSetEquipment()
+    }
+
+    private fun downloadAndSetEquipment() {
+        val room = Room.getItem(args.position)
+        var position: String = ""
+        FirebaseHandler.RealtimeDatabase.getRoomsEquipmentRef(room.id).addValueEventListener(object :
+            ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                listOfEquipment.clear()
+                for(equipment in snapshot.children){
+                    position = equipment.key.toString()
+                    listOfEquipment.add(position)
+                }
+                val adapter = ArrayAdapter(requireContext(),
+                    R.layout.simple_spinner_item,listOfEquipment)
+                spinner.adapter = adapter
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                //TODO("Not yet implemented")
+            }
+        })
     }
 
     private fun bindElements() {

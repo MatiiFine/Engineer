@@ -127,6 +127,14 @@ object FirebaseHandler {
             return getEquipmentRef().child(roomID)
         }
 
+        fun addNewEquipment(roomID: String, equipment: String){
+            getRoomsEquipmentRef(roomID).child(equipment).setValue("")
+        }
+
+        fun deleteEquipment(roomID: String, equipment: String){
+            getRoomsEquipmentRef(roomID).child(equipment).removeValue()
+        }
+
     }
 
     object Authentication{

@@ -97,12 +97,25 @@
         <action
             android:id="@+id/action_roomManagementFragment_to_previewFragment"
             app:destination="@id/previewFragment" />
+        <action
+            android:id="@+id/action_roomManagementFragment_to_manageDesksFragment"
+            app:destination="@id/manageDesksFragment" />
     </fragment>
     <fragment
         android:id="@+id/previewFragment"
         android:name="com.example.engenieer.roomManagement.PreviewFragment"
         android:label="fragment_preview"
         tools:layout="@layout/fragment_preview" >
+        <argument
+            android:name="position"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
+    <fragment
+        android:id="@+id/manageDesksFragment"
+        android:name="com.example.engenieer.roomManagement.ManageDesksFragment"
+        android:label="fragment_manage_desks"
+        tools:layout="@layout/fragment_manage_desks" >
         <argument
             android:name="position"
             app:argType="integer"
