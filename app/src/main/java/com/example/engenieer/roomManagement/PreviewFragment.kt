@@ -51,7 +51,7 @@ class PreviewFragment : Fragment() {
     private fun downloadAndSetEquipment() {
         val room = Room.getItem(args.position)
         var position: String = ""
-        FirebaseHandler.RealtimeDatabase.getRoomsEquipmentRef(room.id).addValueEventListener(object :
+        FirebaseHandler.RealtimeDatabase.getRoomsEquipmentRef(room.id).addListenerForSingleValueEvent(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 listOfEquipment.clear()

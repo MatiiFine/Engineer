@@ -51,4 +51,12 @@
     <string name="manage_desks_desc">This is the place where you can add new equipment or remove existing equipment.</string>
     <string name="add_new_btn">Add</string>
     <string name="remove_btn">Remove</string>
+    <string name="equipment_name">Equipment name</string>
+    <string name="room_name">Room name</string>
+    <string name="booking_date">DD-MM-YYYY</string>
+    <string name="start_hour_label">Start:</string>
+    <string name="start_hour">12:00</string>
+    <string name="end_hour_label">End:</string>
+    <string name="end_hour">24:00</string>
+    <string name="bookings_label">Bookings</string>
 </resources>

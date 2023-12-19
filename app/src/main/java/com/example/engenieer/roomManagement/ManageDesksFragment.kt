@@ -57,7 +57,7 @@ class ManageDesksFragment : Fragment() {
     private fun downloadAndSetEquipment() {
         val room = Room.getItem(args.position)
         var position: String = ""
-        FirebaseHandler.RealtimeDatabase.getRoomsEquipmentRef(room.id).addValueEventListener(object : ValueEventListener{
+        FirebaseHandler.RealtimeDatabase.getRoomsEquipmentRef(room.id).addListenerForSingleValueEvent(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 listOfEquipment.clear()
                 for(equipment in snapshot.children){
@@ -94,8 +94,15 @@ class ManageDesksFragment : Fragment() {
 
     private fun remove() {
         val equipment = spinner.selectedItem
-        if (equipment != null)
-            FirebaseHandler.RealtimeDatabase.deleteEquipment(Room.getItem(args.position).id, equipment.toString())
+        if (equipment != null) {
+            listOfEquipment.removeAt(listOfEquipment.indexOf(equipment))
+            val adapter = ArrayAdapter(requireContext(),android.R.layout.simple_spinner_item,listOfEquipment)
+            spinner.adapter = adapter
+            FirebaseHandler.RealtimeDatabase.deleteEquipment(
+                Room.getItem(args.position).id,
+                equipment.toString()
+            )
+        }
     }
 
     private fun add() {
@@ -104,13 +111,16 @@ class ManageDesksFragment : Fragment() {
                 Room.getItem(args.position).id,
                 equipmentInput.text.toString()
             )
+            listOfEquipment.add(equipmentInput.text.toString())
+            val adapter = ArrayAdapter(requireContext(),android.R.layout.simple_spinner_item,listOfEquipment)
+            spinner.adapter = adapter
             equipmentInput.setText("")
-            /*val view: View? = binding.root
+            val view: View? = binding.root
             if (view != null) {
                 val inputMethodManager =
                     requireContext().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                 inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
-            }*/
+            }
         }
     }
 }
