@@ -2,6 +2,7 @@ package com.example.engenieer.helper
 
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Log
 import com.example.engenieer.booking.BookingDB
 import com.example.engenieer.booking.BookingItem
 import com.example.engenieer.buildings.BuildingDB
@@ -157,6 +158,10 @@ object FirebaseHandler {
                     bookingItem.endHour
                 )
             )
+        }
+
+        fun deleteBooking(roomID: String, bookingID: String){
+            getRoomBookingsRef(roomID).child(bookingID).removeValue()
         }
 
     }

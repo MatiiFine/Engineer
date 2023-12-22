@@ -42,7 +42,8 @@ class RoomManagementFragment : Fragment() {
     }
 
     private fun bookings() {
-        //TODO("Not yet implemented")
+        val action = RoomManagementFragmentDirections.actionRoomManagementFragmentToBookingFragment(args.position)
+        findNavController().navigate(action)
     }
 
     private fun manage() {

@@ -100,6 +100,9 @@
         <action
             android:id="@+id/action_roomManagementFragment_to_manageDesksFragment"
             app:destination="@id/manageDesksFragment" />
+        <action
+            android:id="@+id/action_roomManagementFragment_to_bookingFragment"
+            app:destination="@id/bookingFragment" />
     </fragment>
     <fragment
         android:id="@+id/previewFragment"
@@ -140,5 +143,18 @@
         <argument
             android:name="equipment"
             app:argType="string" />
+        <action
+            android:id="@+id/action_calendarFragment_to_bookingFragment"
+            app:destination="@id/bookingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/bookingFragment"
+        android:name="com.example.engenieer.booking.BookingFragment"
+        android:label="fragment_bookings_list"
+        tools:layout="@layout/fragment_bookings_list" >
+        <argument
+            android:name="position"
+            app:argType="integer"
+            android:defaultValue="0" />
     </fragment>
 </navigation>

@@ -38,6 +38,7 @@ class CalendarFragment : Fragment() {
     private lateinit var startButton: Button
     private lateinit var endButton: Button
     private lateinit var bookmarkButton: ImageButton
+    private lateinit var bookingsButton: Button
     private var day: Int = 1
     private var month: Int = 1
     private var year: Int = 2023
@@ -67,12 +68,8 @@ class CalendarFragment : Fragment() {
         initializeStartPicker()
         initializeEndPicker()
         setOnClickListeners()
-        clearBookings()
+        Booking.checkRoom(Room.getItem(args.position).id)
         downloadBookings()
-    }
-
-    private fun clearBookings() {
-        Booking.clear()
     }
 
     private fun downloadBookings() {
@@ -100,18 +97,17 @@ class CalendarFragment : Fragment() {
                             "startHour" -> startHour = booking.value.toString()
                         }
                     }
-                    Booking.addItem(
-                        BookingItem(
-                            bookingID,
-                            ownerID,
-                            roomID,
-                            roomName,
-                            equipment,
-                            date,
-                            startHour,
-                            endHour
-                        )
+                    var newBookingItem = BookingItem(
+                        bookingID,
+                        ownerID,
+                        roomID,
+                        roomName,
+                        equipment,
+                        date,
+                        startHour,
+                        endHour
                     )
+                    Booking.addItem(newBookingItem)
                 }
             }
 
@@ -193,6 +189,12 @@ class CalendarFragment : Fragment() {
         startButton.setOnClickListener { startButton() }
         endButton.setOnClickListener { endButton() }
         bookmarkButton.setOnClickListener { booking() }
+        bookingsButton.setOnClickListener { showBookings() }
+    }
+
+    private fun showBookings() {
+        val action = CalendarFragmentDirections.actionCalendarFragmentToBookingFragment(args.position)
+        findNavController().navigate(action)
     }
 
     private fun startButton(){
@@ -291,6 +293,8 @@ class CalendarFragment : Fragment() {
         startButton = binding.startHourBtn
         endButton = binding.endHourBtn
         bookmarkButton = binding.bookBtn
+        bookingsButton = binding.bookingsBtn
+        bookingsButton = binding.bookingsBtn
     }
 
     private fun setStartTime(hour: Int,minute: Int){

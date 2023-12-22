@@ -2,18 +2,40 @@ package com.example.engenieer.booking
 
 import android.os.Parcel
 import android.os.Parcelable
+import android.util.Log
 import java.util.ArrayList
 
 object Booking {
 
     val ITEMS: MutableList<BookingItem> = ArrayList()
+    var currentRoomID: String = ""
 
-    fun addItem(item: BookingItem) {
-        ITEMS.add(item)
+    fun addItem(item: BookingItem){
+        if(!checkIfExist(item))
+            ITEMS.add(item)
     }
 
-    fun clear(){
-        ITEMS.clear()
+    private fun checkIfExist(item: BookingItem): Boolean {
+        for (element in ITEMS){
+            if(element.bookingID == item.bookingID) return true
+        }
+        return false
+    }
+
+    fun checkRoom(roomID: String){
+        if (currentRoomID != roomID){
+            currentRoomID = roomID
+            ITEMS.clear()
+        }
+    }
+
+    fun delete(position: Int) {
+        ITEMS.removeAt(position)
+        Log.i("bookingDeletion", "bookingDeleted")
+    }
+
+    fun getItem(position: Int): BookingItem{
+        return ITEMS[position]
     }
 }
 
