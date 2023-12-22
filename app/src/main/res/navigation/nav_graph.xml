@@ -110,6 +110,9 @@
             android:name="position"
             app:argType="integer"
             android:defaultValue="0" />
+        <action
+            android:id="@+id/action_preview_to_calendar"
+            app:destination="@id/calendarFragment" />
     </fragment>
     <fragment
         android:id="@+id/manageDesksFragment"
@@ -120,5 +123,22 @@
             android:name="position"
             app:argType="integer"
             android:defaultValue="0" />
+    </fragment>
+    <fragment
+        android:id="@+id/calendarFragment"
+        android:name="com.example.engenieer.booking.CalendarFragment"
+        android:label="fragment_calendar"
+        tools:layout="@layout/fragment_calendar" >
+        <argument
+            android:name="position"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="wholeRoom"
+            app:argType="boolean"
+            android:defaultValue="true" />
+        <argument
+            android:name="equipment"
+            app:argType="string" />
     </fragment>
 </navigation>

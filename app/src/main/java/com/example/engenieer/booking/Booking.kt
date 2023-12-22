@@ -6,10 +6,14 @@ import java.util.ArrayList
 
 object Booking {
 
-    val ITEMS: MutableList<Booking> = ArrayList()
+    val ITEMS: MutableList<BookingItem> = ArrayList()
 
-    private fun addItem(item: Booking) {
+    fun addItem(item: BookingItem) {
         ITEMS.add(item)
+    }
+
+    fun clear(){
+        ITEMS.clear()
     }
 }
 

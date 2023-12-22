@@ -2,6 +2,8 @@ package com.example.engenieer.helper
 
 import android.graphics.Bitmap
 import android.net.Uri
+import com.example.engenieer.booking.BookingDB
+import com.example.engenieer.booking.BookingItem
 import com.example.engenieer.buildings.BuildingDB
 import com.example.engenieer.buildings.BuildingItem
 import com.example.engenieer.rooms.RoomDB
@@ -24,6 +26,7 @@ object FirebaseHandler {
         private const val storagePath: String = "storage"
         private const val roomsPath: String = "rooms"
         private const val eqPath: String = "equipment"
+        private const val bookingsPath: String = "bookings"
 
         private val firebaseDatabase by lazy {
             Firebase.database("https://engenieer-45947-default-rtdb.europe-west1.firebasedatabase.app/")
@@ -133,6 +136,27 @@ object FirebaseHandler {
 
         fun deleteEquipment(roomID: String, equipment: String){
             getRoomsEquipmentRef(roomID).child(equipment).removeValue()
+        }
+
+        private fun getBookingRef(): DatabaseReference{
+            return firebaseDatabase.reference.child(bookingsPath)
+        }
+
+        fun getRoomBookingsRef(roomID: String): DatabaseReference{
+            return getBookingRef().child(roomID)
+        }
+
+        fun addNewBooking(bookingItem: BookingItem){
+            getRoomBookingsRef(bookingItem.roomID).child(bookingItem.bookingID).setValue(
+                BookingDB(
+                    bookingItem.roomName,
+                    bookingItem.ownerID,
+                    bookingItem.equipment,
+                    bookingItem.date,
+                    bookingItem.startHour,
+                    bookingItem.endHour
+                )
+            )
         }
 
     }

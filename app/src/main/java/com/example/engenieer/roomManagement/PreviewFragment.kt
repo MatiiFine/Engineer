@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
 import android.widget.TextView
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.engenieer.databinding.FragmentPreviewBinding
 import com.example.engenieer.helper.FirebaseHandler
@@ -90,11 +91,14 @@ class PreviewFragment : Fragment() {
     }
 
     private fun book_all() {
-        //TODO("Not yet implemented")
+        val action = PreviewFragmentDirections.actionPreviewToCalendar("nothing",args.position,true)
+        findNavController().navigate(action)
     }
 
     private fun book() {
-        //TODO("Not yet implemented")
+        val equipment = spinner.selectedItem.toString()
+        val action = PreviewFragmentDirections.actionPreviewToCalendar(equipment,args.position,false)
+        findNavController().navigate(action)
     }
 
 }

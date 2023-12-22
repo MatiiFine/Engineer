@@ -5,8 +5,18 @@
     android:id="@+id/calendar"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    app:circularflow_defaultRadius="10dp"
+    app:circularflow_radiusInDP="10dp"
+    app:layout_constraintCircleRadius="10dp"
     tools:context=".booking.CalendarFragment">
 
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
 
     <CalendarView
         android:id="@+id/calendarView"
@@ -15,5 +25,62 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/startHourPickerLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="10dp"
+        android:text="@string/start_hour_label"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/startHourBtn"
+        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
+
+    <TextView
+        android:id="@+id/endHourPickerLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="60dp"
+        android:text="@string/end_hour_label"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/guideline8"
+        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
+
+    <Button
+        android:id="@+id/startHourBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="20dp"
+        android:text="@string/start_hour"
+        app:cornerRadius="10dp"
+        app:layout_constraintEnd_toStartOf="@+id/guideline8"
+        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
+
+    <Button
+        android:id="@+id/endHourBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="50dp"
+        android:text="@string/end_hour"
+        app:cornerRadius="10dp"
+        app:layout_constraintStart_toEndOf="@+id/endHourPickerLabel"
+        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
+
+    <ImageButton
+        android:id="@+id/bookBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/blue"
+        android:src="@drawable/ic_add_bookmark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/endHourBtn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
