@@ -226,6 +226,7 @@ class BuildingFragment : Fragment(), ToDoListener {
     private fun downloadDataOfRoomsToDelete(buildingID: String) {
         var roomID: String = ""
         var roomPhoto: String = ""
+        var arrayList: ArrayList<String> = ArrayList()
         deleteDataListener = deleteRef.addValueEventListener(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -239,10 +240,44 @@ class BuildingFragment : Fragment(), ToDoListener {
                                 }
                             }
                             Room.addRoomToDeletionList(buildingID, roomID, roomPhoto)
+                            arrayList.add(roomID)
                         }
                     }
                 }
                 deleteDataListener?.let { Room.deleteRoomsOfBuilding(buildingID, deleteRef, it) }
+                deleteBookings(arrayList)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                //TODO("Not yet implemented")
+            }
+        })
+    }
+
+    private fun roomIsOnTheList(roomID: String, arrayList: java.util.ArrayList<String>): Boolean {
+        for (element in arrayList){
+            if (roomID == element) return true
+        }
+        return false
+    }
+
+    private fun deleteBookings(arrayList: ArrayList<String>) {
+        var roomID: String = ""
+        var bookingID: String = ""
+        val toDelete: ArrayList<Pair<String,String>> = ArrayList()
+        FirebaseHandler.RealtimeDatabase.getBookingRef().addListenerForSingleValueEvent(object :
+            ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (room in snapshot.children){
+                    roomID = room.key.toString()
+                    if(roomIsOnTheList(roomID,arrayList)){
+                        for(booking in room.children){
+                            bookingID = booking.key.toString()
+                            toDelete.add(Pair(roomID,bookingID))
+                        }
+                    }
+                }
+                FirebaseHandler.RealtimeDatabase.deleteBookingsOfBuilding(toDelete)
             }
 
             override fun onCancelled(error: DatabaseError) {

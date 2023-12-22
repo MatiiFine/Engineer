@@ -139,7 +139,7 @@ object FirebaseHandler {
             getRoomsEquipmentRef(roomID).child(equipment).removeValue()
         }
 
-        private fun getBookingRef(): DatabaseReference{
+        fun getBookingRef(): DatabaseReference{
             return firebaseDatabase.reference.child(bookingsPath)
         }
 
@@ -162,6 +162,18 @@ object FirebaseHandler {
 
         fun deleteBooking(roomID: String, bookingID: String){
             getRoomBookingsRef(roomID).child(bookingID).removeValue()
+        }
+
+        fun deleteBookings(roomID: String, arrayList: ArrayList<String>){
+            for (bookingID in arrayList) {
+                getRoomBookingsRef(roomID).child(bookingID).removeValue()
+            }
+        }
+
+        fun deleteBookingsOfBuilding(toDelete: java.util.ArrayList<Pair<String, String>>) {
+            for (element in toDelete){
+                getRoomBookingsRef(element.first).child(element.second).removeValue()
+            }
         }
 
     }

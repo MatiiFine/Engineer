@@ -228,10 +228,31 @@ class RoomFragment : Fragment(), ToDoListener {
     }
 
     private fun deleteRoom(position: Int) {
+        downloadBookingsToDelete(position)
         Room.deleteRoom(position)
         Room.PHOTOS.removeAt(position)
         reloadAdapter()
         showMessage(1)
+    }
+
+    private fun downloadBookingsToDelete(position: Int) {
+        val roomItem = Room.getItem(position)
+        val arrayList: ArrayList<String> = ArrayList()
+        var bookingID: String = ""
+        FirebaseHandler.RealtimeDatabase.getRoomBookingsRef(roomItem.id).addListenerForSingleValueEvent(object :
+        ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (booking in snapshot.children){
+                    bookingID = booking.key.toString()
+                    arrayList.add(bookingID)
+                }
+                FirebaseHandler.RealtimeDatabase.deleteBookings(roomItem.id,arrayList)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                //TODO("Not yet implemented")
+            }
+        })
     }
 
     private fun showMessage(i: Int) {
