@@ -246,6 +246,34 @@ class BuildingFragment : Fragment(), ToDoListener {
                 }
                 deleteDataListener?.let { Room.deleteRoomsOfBuilding(buildingID, deleteRef, it) }
                 deleteBookings(arrayList)
+                deleteEquipment(arrayList)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                //TODO("Not yet implemented")
+            }
+        })
+    }
+
+    private fun deleteEquipment(arrayList: java.util.ArrayList<String>) {
+        val toDelete: ArrayList<Pair<String,ArrayList<String>>> = ArrayList()
+        var roomID: String = ""
+        var eq: String = ""
+        FirebaseHandler.RealtimeDatabase.getEquipmentRef().addListenerForSingleValueEvent(object :
+        ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for(room in snapshot.children){
+                    roomID = room.key.toString()
+                    if(roomIsOnTheList(roomID,arrayList)){
+                        val eqList: ArrayList<String> = ArrayList()
+                        for (equipment in room.children){
+                            eq = equipment.key.toString()
+                            eqList.add(eq)
+                        }
+                        toDelete.add(Pair(roomID,eqList))
+                    }
+                }
+                FirebaseHandler.RealtimeDatabase.deleteEquipmentOfRooms(toDelete)
             }
 
             override fun onCancelled(error: DatabaseError) {

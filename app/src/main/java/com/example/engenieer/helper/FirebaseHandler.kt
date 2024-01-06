@@ -123,7 +123,7 @@ object FirebaseHandler {
             return stream.toByteArray()
         }
 
-        private fun getEquipmentRef(): DatabaseReference{
+        fun getEquipmentRef(): DatabaseReference{
             return firebaseDatabase.reference.child(eqPath)
         }
 
@@ -137,6 +137,19 @@ object FirebaseHandler {
 
         fun deleteEquipment(roomID: String, equipment: String){
             getRoomsEquipmentRef(roomID).child(equipment).removeValue()
+        }
+
+        fun deleteEquipmentOfRoom(roomID: String, arrayList: ArrayList<String>){
+            for(element in arrayList){
+                deleteEquipment(roomID,element)
+            }
+        }
+
+        fun deleteEquipmentOfRooms(roomList: ArrayList<Pair<String,ArrayList<String>>>){
+            for (room in roomList){
+                var roomID = room.first
+                deleteEquipmentOfRoom(roomID,room.second)
+            }
         }
 
         fun getBookingRef(): DatabaseReference{
