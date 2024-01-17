@@ -189,6 +189,10 @@ object FirebaseHandler {
             }
         }
 
+        fun getRoomsOfBuilding(buildingID: String): DatabaseReference{
+            return getRoomsRef().child(buildingID)
+        }
+
     }
 
     object Authentication{

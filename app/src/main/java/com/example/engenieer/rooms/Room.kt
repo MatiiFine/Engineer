@@ -145,6 +145,15 @@ object Room {
     fun getItem(position: Int): RoomItem {
         return ITEMS[position]
     }
+
+    fun clearItems(){
+        ITEMS.clear()
+        PHOTOS.clear()
+        DOWNLOAD.clear()
+        currentBuildingID = ""
+        ROOMS_OF_BUILDING.clear()
+        ROOMS_PHOTOS_OF_BUILDING.clear()
+    }
 }
 
 data class RoomItem(val id: String, val name: String, val description: String, val shortDescription: String, val photo: String, val buildingID: String): Parcelable {

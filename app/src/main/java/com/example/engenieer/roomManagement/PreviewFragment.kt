@@ -63,6 +63,10 @@ class PreviewFragment : Fragment() {
                 val adapter = ArrayAdapter(requireContext(),
                     R.layout.simple_spinner_item,listOfEquipment)
                 spinner.adapter = adapter
+                if (spinner.visibility == View.GONE){
+                    spinner.visibility = View.VISIBLE
+                    book_btn.visibility = View.VISIBLE
+                }
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -83,6 +87,8 @@ class PreviewFragment : Fragment() {
         val roomItem = Room.getItem(args.position)
         name.text = roomItem.name
         description.text = roomItem.description
+        book_btn.visibility = View.GONE
+        spinner.visibility = View.GONE
     }
 
     private fun setListeners() {

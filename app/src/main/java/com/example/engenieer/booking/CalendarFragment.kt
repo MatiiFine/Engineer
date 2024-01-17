@@ -144,7 +144,7 @@ class CalendarFragment : Fragment() {
     private fun initializeCalendar() {
         val calendar = Calendar.getInstance()
         day = calendar.get(Calendar.DAY_OF_MONTH)
-        month = calendar.get(Calendar.MONTH)
+        month = calendar.get(Calendar.MONTH)+1
         year = calendar.get(Calendar.YEAR)
         startHourTime = calendar.get(Calendar.HOUR_OF_DAY)
         startMinuteTime = calendar.get(Calendar.MINUTE)
@@ -158,7 +158,7 @@ class CalendarFragment : Fragment() {
         pickedDate = "$day.$month.$year"
 
         this.calendar.setOnDateChangeListener(CalendarView.OnDateChangeListener { view, year, month, dayOfMonth ->
-            validateDate(dayOfMonth,month,year)
+            validateDate(dayOfMonth,month+1,year)
         })
     }
 
@@ -172,7 +172,8 @@ class CalendarFragment : Fragment() {
             this.day = dayOfMonth
             this.month = month
             this.year = year
-            pickedDate = "$dayOfMonth.$month.$year"
+            val correctMonth: String = if (month<10) "0$month" else "$month"
+            pickedDate = "$dayOfMonth.$correctMonth.$year"
         }
     }
 
@@ -245,7 +246,8 @@ class CalendarFragment : Fragment() {
     private fun newBooking() {
         val bookingID = UUID.randomUUID().toString()
         val roomItem = Room.getItem(args.position)
-        val date = "$day.$month.$year"
+        val correctMonth: String = if (month<10) "0$month" else "$month"
+        val date = "$day.$correctMonth.$year"
         val bookingItem = BookingItem(
             bookingID,
             FirebaseHandler.Authentication.getUserUid().toString(),
@@ -256,10 +258,38 @@ class CalendarFragment : Fragment() {
             startTime,
             endTime
         )
-        Booking.addItem(bookingItem)
-        FirebaseHandler.RealtimeDatabase.addNewBooking(bookingItem)
-        showSuccessMessage()
-        findNavController().popBackStack()
+        val room = Room.getItem(args.position)
+        var found: Boolean = false
+        FirebaseHandler.RealtimeDatabase.getRoomsOfBuilding(room.buildingID).addListenerForSingleValueEvent( object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (element in snapshot.children){
+                    if (element.key.toString() == room.id){
+                        found = true
+                        Booking.addItem(bookingItem)
+                        FirebaseHandler.RealtimeDatabase.addNewBooking(bookingItem)
+                        showSuccessMessage()
+                        findNavController().popBackStack()
+                    }
+                }
+                if (!found) {
+                    showFailMessage()
+                    val action = CalendarFragmentDirections.actionCalendarFragmentToBuildingFragment(true)
+                    findNavController().navigate(action)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                //TODO("Not yet implemented")
+            }
+        })
+    }
+
+    private fun showFailMessage() {
+        Snackbar.make(
+            binding.root,
+            R.string.booking_failed,
+            Snackbar.LENGTH_SHORT
+        ).show()
     }
 
     private fun showSuccessMessage() {
@@ -273,7 +303,15 @@ class CalendarFragment : Fragment() {
     private fun validateTime(): Boolean {
         val start = (startHourTime * 100) + startMinuteTime
         val end = (endHourTime * 100) + endMinuteTime
-        if (start >=  end){
+        val currentHour = Calendar.HOUR_OF_DAY
+        val currentMinute = Calendar.MINUTE
+        val currentTime = (currentHour * 100) + currentMinute
+        val currentDay = Calendar.DAY_OF_MONTH
+        val currentMonth = Calendar.MONTH
+        val currentYear = Calendar.YEAR
+        val correctMonth: String = if (currentMonth<10) "0$currentMonth" else "$currentMonth"
+        val currentDate = "$currentDay.$correctMonth.$currentYear"
+        if ((start >=  end) || (start < currentTime && currentDate == pickedDate)){
             displayTimeFailedMessage()
             return false
         }

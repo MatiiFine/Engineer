@@ -65,4 +65,5 @@
     <string name="time_pick_failed">The end hour cannot be earlier than the start hour.</string>
     <string name="room_booking_failed">This period of time is not available.</string>
     <string name="booking_completed">Booking completed</string>
+    <string name="booking_failed">Booking failed</string>
 </resources>

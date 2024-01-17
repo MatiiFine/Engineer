@@ -192,7 +192,7 @@ class AddBuildingFragment : Fragment() {
                         //TODO("Not yet implemented")
                     }
                 })
-        }
+        }   
     }
 
     private fun returnToBuildingList() {

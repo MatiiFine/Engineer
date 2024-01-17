@@ -83,6 +83,7 @@ class AddRoomFragment : Fragment() {
         desc = Room.ITEMS[position].description
         roomToEdit = Room.ITEMS[position].id
         buildingID = Room.ITEMS[position].buildingID
+        oldPhotoID = Room.ITEMS[position].photo
 
         roomPhoto.setImageBitmap(photo)
         roomNameInput.setText(name)

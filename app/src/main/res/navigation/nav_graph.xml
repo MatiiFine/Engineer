@@ -25,6 +25,10 @@
         <action
             android:id="@+id/actionBuildingFragmentRoomFragment"
             app:destination="@id/roomFragment" />
+        <argument
+            android:name="needToRefresh"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
     <fragment
         android:id="@+id/addBuildingFragment"
@@ -146,6 +150,9 @@
         <action
             android:id="@+id/action_calendarFragment_to_bookingFragment"
             app:destination="@id/bookingFragment" />
+        <action
+            android:id="@+id/action_calendarFragment_to_buildingFragment"
+            app:destination="@id/buildingFragment" />
     </fragment>
     <fragment
         android:id="@+id/bookingFragment"

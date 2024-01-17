@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.graphics.drawable.toBitmap
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.example.engenieer.helper.FirebaseHandler
 import com.example.engenieer.R
 import com.example.engenieer.databinding.FragmentBuildingListBinding
@@ -29,6 +30,7 @@ class BuildingFragment : Fragment(), ToDoListener {
     private var isAdmin: Boolean = false
     val deleteRef = FirebaseHandler.RealtimeDatabase.getRoomsRef()
     private  var deleteDataListener: ValueEventListener? =null
+    private val args: BuildingFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,6 +38,7 @@ class BuildingFragment : Fragment(), ToDoListener {
     ): View? {
         binding = FragmentBuildingListBinding.inflate(inflater,container,false)
         verifyAccess()
+        checkRefresh()
         with(binding.list){
             layoutManager = LinearLayoutManager(context)
             downloadBuildingsData()
@@ -43,6 +46,13 @@ class BuildingFragment : Fragment(), ToDoListener {
         }
 
         return binding.root
+    }
+
+    private fun checkRefresh() {
+        if (args.needToRefresh){
+            Building.clearItems()
+            Room.clearItems()
+        }
     }
 
     private fun verifyAccess() {
@@ -205,7 +215,7 @@ class BuildingFragment : Fragment(), ToDoListener {
             }
 
             setNeutralButton(getString(R.string.edit_building_btn)){ dialog, id ->
-                val action = BuildingFragmentDirections.actionBuildingFragmentToAddBuildingFragment(editStatus = true)
+                val action = BuildingFragmentDirections.actionBuildingFragmentToAddBuildingFragment(editStatus = true, position = position)
                 findNavController().navigate(action)
                 showMessage(3)
             }

@@ -44,6 +44,8 @@ object Building {
 
     fun clearItems(){
         ITEMS.clear()
+        PHOTOS.clear()
+        DOWNLOAD.clear()
     }
 
     fun deleteBuilding(position: Int): String{
